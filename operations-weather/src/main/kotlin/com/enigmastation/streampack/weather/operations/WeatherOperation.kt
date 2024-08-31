@@ -11,6 +11,10 @@ import org.springframework.stereotype.Service
 @Service
 class WeatherOperation(val geocodeService: GeocodeService, val weatherService: WeatherService) :
     RouterOperation() {
+    override fun description(): String {
+        return "~weather [location] will query OpenWeatherMap for that location; if it's discoverable, the current weather will be shown."
+    }
+
     override fun canHandle(message: RouterMessage): Boolean {
         return message.content.startsWith("~weather ")
     }

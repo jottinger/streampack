@@ -52,6 +52,10 @@ class SetKarmaOperation(val karmaEntryService: KarmaEntryService) :
         return null
     }
 
+    override fun description(): String {
+        return "Providing a decrement or increment operation after a term will increment or decrement somethings karma; \"foo++\" means you approve of foo."
+    }
+
     companion object {
         private val operationPattern =
             Pattern.compile("^(?<nick>.+)(?<service>\\+{2}|--).*\$", Pattern.COMMENTS)

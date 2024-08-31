@@ -40,4 +40,8 @@ class GetKarmaOperation(val karmaEntryService: KarmaEntryService) :
             }
         }
     }
+
+    override fun description(): String {
+        return "\"~karma [term]\" will give you the current calculated karma for the term, if any."
+    }
 }

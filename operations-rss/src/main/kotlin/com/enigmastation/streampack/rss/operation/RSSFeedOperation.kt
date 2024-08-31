@@ -14,6 +14,12 @@ import org.springframework.stereotype.Service
 @Service
 @ConditionalOnProperty(prefix = "streampack.rss", name = ["enabled"], matchIfMissing = false)
 class RSSFeedOperation(val rssFeedService: RSSFeedService) : RouterOperation() {
+    override fun description(): String {
+        return """~rss add [url] will add a feed for this channel, such that new entries will be echoed when they are read.
+            |~rss delete [url] will remove the feed for this channel, and ~rss info [url] will give the feed's current status.
+        """.trimIndent()
+    }
+
     override fun canHandle(message: RouterMessage): Boolean {
         return message.content.startsWith("~rss")
     }

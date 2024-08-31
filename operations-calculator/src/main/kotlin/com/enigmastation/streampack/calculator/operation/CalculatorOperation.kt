@@ -27,4 +27,12 @@ class CalculatorOperation(val service: MathService) : RouterOperation(priority =
             null
         }
     }
+
+    override fun description(): String {
+        return "Evaluates any mathematical operation provided after \"~calc\" - try \"calc 4*sin(3)^2\""
+    }
+
+    override fun longDescription(): String {
+        return super.longDescription()
+    }
 }
