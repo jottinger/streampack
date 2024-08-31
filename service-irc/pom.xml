@@ -13,15 +13,10 @@
     <artifactId>service-irc</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
-    <properties>
-        <kitteh.version>[9.0.0,)</kitteh.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.kitteh.irc</groupId>
             <artifactId>client-lib</artifactId>
-            <version>${kitteh.version}</version>
         </dependency>
         <dependency>
             <groupId>com.enigmastation.streampack</groupId>

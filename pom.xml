@@ -61,7 +61,65 @@
         <jacoco.version>0.8.12</jacoco.version>
         <mockk.version>1.13.12</mockk.version>
         <springdoc.version>2.6.0</springdoc.version>
+        <rome.version>2.1.0</rome.version>
+        <jsoup.version>1.18.1</jsoup.version>
+        <commons-text.version>1.12.0</commons-text.version>
+        <kitteh.version>9.0.0</kitteh.version>
+        <jda.version>5.1.0</jda.version>
+        <parser-ng.version>0.1.9-release</parser-ng.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+                <version>${commons-text.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.mockk</groupId>
+                <artifactId>mockk-jvm</artifactId>
+                <version>${mockk.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${springdoc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.rometools</groupId>
+                <artifactId>rome</artifactId>
+                <version>${rome.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kitteh.irc</groupId>
+                <artifactId>client-lib</artifactId>
+                <version>${kitteh.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.dv8tion</groupId>
+                <artifactId>JDA</artifactId>
+                <version>${jda.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>club.minnced</groupId>
+                        <artifactId>opus-java</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.github.gbenroscience</groupId>
+                <artifactId>parser-ng</artifactId>
+                <version>${parser-ng.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -96,30 +154,6 @@
         </dependency>
 
     </dependencies>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.jsoup</groupId>
-                <artifactId>jsoup</artifactId>
-                <version>1.18.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-text</artifactId>
-                <version>1.12.0</version>
-            </dependency>
-            <dependency>
-                <groupId>io.mockk</groupId>
-                <artifactId>mockk-jvm</artifactId>
-                <version>${mockk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springdoc</groupId>
-                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-                <version>${springdoc.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
 
     <build>
