@@ -5,18 +5,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.enigmastation</groupId>
+        <groupId>com.enigmastation.streampack</groupId>
         <artifactId>streampack</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.enigmastation</groupId>
     <artifactId>operations-factoid</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
-            <groupId>com.enigmastation</groupId>
+            <groupId>com.enigmastation.streampack</groupId>
             <artifactId>lib-whiteboard</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>

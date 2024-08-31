@@ -5,12 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.enigmastation</groupId>
+        <groupId>com.enigmastation.streampack</groupId>
         <artifactId>streampack</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.enigmastation</groupId>
     <artifactId>application-llm</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <properties>
@@ -30,52 +29,52 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.enigmastation</groupId>
+            <groupId>com.enigmastation.streampack</groupId>
             <artifactId>lib-logservice</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.enigmastation</groupId>
+            <groupId>com.enigmastation.streampack</groupId>
             <artifactId>service-irc</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.enigmastation</groupId>
+            <groupId>com.enigmastation.streampack</groupId>
             <artifactId>service-discord</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.enigmastation</groupId>
+            <groupId>com.enigmastation.streampack</groupId>
             <artifactId>service-artemis</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.enigmastation</groupId>
+            <groupId>com.enigmastation.streampack</groupId>
             <artifactId>operations-factoid</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.enigmastation</groupId>
+            <groupId>com.enigmastation.streampack</groupId>
             <artifactId>operations-calculator</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.enigmastation</groupId>
+            <groupId>com.enigmastation.streampack</groupId>
             <artifactId>operations-rss</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.enigmastation</groupId>
+            <groupId>com.enigmastation.streampack</groupId>
             <artifactId>operations-karma</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.enigmastation</groupId>
+            <groupId>com.enigmastation.streampack</groupId>
             <artifactId>operations-urltitle</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.enigmastation</groupId>
+            <groupId>com.enigmastation.streampack</groupId>
             <artifactId>operations-weather</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
@@ -117,6 +116,10 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludeDevtools>true</excludeDevtools>
+                    <finalName>application-llm</finalName>
+                </configuration>
             </plugin>
         </plugins>
     </build>

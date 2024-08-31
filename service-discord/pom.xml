@@ -5,12 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.enigmastation</groupId>
+        <groupId>com.enigmastation.streampack</groupId>
         <artifactId>streampack</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.enigmastation</groupId>
     <artifactId>service-discord</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
@@ -27,13 +26,13 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.enigmastation</groupId>
+            <groupId>com.enigmastation.streampack</groupId>
             <artifactId>lib-whiteboard</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.enigmastation</groupId>
+            <groupId>com.enigmastation.streampack</groupId>
             <artifactId>lib-logservice</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>

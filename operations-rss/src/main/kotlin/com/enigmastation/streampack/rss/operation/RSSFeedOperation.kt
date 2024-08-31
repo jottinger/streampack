@@ -17,19 +17,20 @@ class RSSFeedOperation(val rssFeedService: RSSFeedService) : RouterOperation() {
     override fun description(): String {
         return """~rss add [url] will add a feed for this channel, such that new entries will be echoed when they are read.
             |~rss delete [url] will remove the feed for this channel, and ~rss info [url] will give the feed's current status.
-        """.trimIndent()
+        """
+            .trimIndent()
     }
 
     override fun canHandle(message: RouterMessage): Boolean {
-        return message.content.startsWith("~rss")
+        return message.content.startsWith("~rss ")
     }
 
     override fun handleMessage(message: RouterMessage): RouterMessage? {
-        if (!message.content.startsWith("~rss")) {
+        if (!canHandle(message)) {
             return null
         }
         val (command, url) = message.content.compress().removePrefix("~rss ").split(" ")
-        if (command == null || url == null) {
+        if (command.isEmpty() || url.isEmpty()) {
             return null
         }
         return when (command.lowercase()) {
