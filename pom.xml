@@ -50,7 +50,7 @@
     </developers>
     <scm>
         <connection>scm:git:git://github.com/jottinger/streampack.git</connection>
-        <developerConnection>cm:git:git@github.com:jottinger/streampack.git</developerConnection>
+        <developerConnection>scm:git:git@github.com:jottinger/streampack.git</developerConnection>
         <url>https://github.com/jottinger/streampack</url>
     </scm>
     <properties>
