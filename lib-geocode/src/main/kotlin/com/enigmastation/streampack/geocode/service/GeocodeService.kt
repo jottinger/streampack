@@ -10,16 +10,14 @@ import com.enigmastation.streampack.web.service.OkHttpService
 import java.util.Optional
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Service
 
-@ConfigurationProperties("streampack.geocode")
 @Service
 class GeocodeService {
     private val logger = LoggerFactory.getLogger(this::class.java)
     private val GEOCODEENDPOINT = "https://maps.googleapis.com/maps/api/geocode/json"
-    lateinit var googleApiKey: String
 
+    @Autowired lateinit var geocodeConfiguration: GeocodeConfiguration
     @Autowired lateinit var okHttpService: OkHttpService
 
     @Autowired private lateinit var repository: GeocodeSearchResponseRepository
@@ -33,7 +31,10 @@ class GeocodeService {
             var data =
                 okHttpService.get(
                     GEOCODEENDPOINT,
-                    mapOf("address" to location.htmlEncode(), "key" to googleApiKey),
+                    mapOf(
+                        "address" to location.htmlEncode(),
+                        "key" to geocodeConfiguration.googleApiKey
+                    ),
                     klass = GeocodeResult::class.java
                 )
             val result = data.results
