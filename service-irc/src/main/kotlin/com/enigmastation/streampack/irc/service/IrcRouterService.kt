@@ -29,22 +29,12 @@ import org.kitteh.irc.client.library.util.StsUtil
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Service
 
-@ConfigurationProperties("streampack.irc")
 @Service
-@ConditionalOnProperty(prefix = "streampack.irc", name = ["enabled"], matchIfMissing = false)
 class IrcRouterService() : RouterService(), InitializingBean {
-    var nick: String = "streampack"
-    var realname: String = "streampack"
-    var host: String = "irc.libera.chat"
-    var port: Int = 6667
-    var sasl: Boolean = true
-    var saslAccount: String? = null
-    var saslPassword: String? = null
-    var channels: String = "#kitteh"
+    @Autowired lateinit var ircServiceConfiguration: IrcServiceConfiguration
+
     lateinit var internalRouter: Router
 
     @Autowired lateinit var channelService: ChannelService
@@ -61,37 +51,37 @@ class IrcRouterService() : RouterService(), InitializingBean {
         client.connect()
     }
 
-    open fun join(channel: String) {
+    fun join(channel: String) {
         client.addChannel(channel)
     }
 
-    open fun leave(channel: String) {
+    fun leave(channel: String) {
         client.getChannel(channel).ifPresent { it.part() }
     }
 
     override fun afterPropertiesSet() {
         client =
             Client.builder()
-                .nick(nick)
+                .nick(ircServiceConfiguration.nick)
                 .server()
-                .host(host)
+                .host(ircServiceConfiguration.host)
                 // .port(port, Client.Builder.Server.SecurityType.SECURE)
                 .then()
                 .management()
                 .stsStorageManager(StsUtil.getDefaultStorageManager())
                 .then()
-                .realName(realname)
-                .user(realname)
+                .realName(ircServiceConfiguration.realname)
+                .user(ircServiceConfiguration.realname)
                 .listeners()
-                .input({ inputLogger.debug("{}", it) })
-                .output({ outputLogger.debug("{}", it) })
-                .exception({ exceptionLogger.error("{}", it.message, it) })
+                .input { inputLogger.debug("{}", it) }
+                .output { outputLogger.debug("{}", it) }
+                .exception { exceptionLogger.error("{}", it.message, it) }
                 .then()
                 .build()
 
-        if (sasl) {
-            val account: String = Objects.requireNonNull(saslAccount)!!
-            val password = Objects.requireNonNull(saslPassword)!!
+        if (ircServiceConfiguration.sasl) {
+            val account: String = Objects.requireNonNull(ircServiceConfiguration.saslAccount)!!
+            val password = Objects.requireNonNull(ircServiceConfiguration.saslPassword)!!
             client.authManager.addProtocol(SaslPlain(client, account, password))
         }
         logger.info("setting event listener")
@@ -115,18 +105,17 @@ class IrcRouterService() : RouterService(), InitializingBean {
             // okay, we have a destination. if it's a channel, we need to see if it's muted.
             var muted = false
             if (destination.startsWith("#")) {
-                channelService.getChannel(MessageSource.IRC, host, destination).ifPresent { channel
-                    ->
-                    muted = channel.muted == true
-                }
+                channelService
+                    .getChannel(MessageSource.IRC, ircServiceConfiguration.host, destination)
+                    .ifPresent { channel -> muted = channel.muted == true }
             }
             if (!muted) {
                 channelService.logEvent(
-                    nick = nick,
+                    nick = ircServiceConfiguration.nick,
                     channel = destination,
                     message = message.content,
                     source = MessageSource.IRC,
-                    server = this.host,
+                    server = ircServiceConfiguration.host,
                     type = LogEventType.MESSAGE,
                 )
 
@@ -142,21 +131,23 @@ class IrcRouterService() : RouterService(), InitializingBean {
         }
     }
 
+    @Suppress("unused")
     @Handler
     fun onChannelAction(event: ChannelCtcpEvent) {
         logger.debug("channel notice: {}", event)
         if (event.message.startsWith("ACTION")) {
             channelService.logEvent(
-                nick = nick,
+                nick = ircServiceConfiguration.nick,
                 channel = event.channel.name,
                 message = event.message.removePrefix("ACTION "),
                 source = MessageSource.IRC,
-                server = this.host,
+                server = ircServiceConfiguration.host,
                 type = LogEventType.ACTION,
             )
         }
     }
 
+    @Suppress("unused")
     @Handler
     fun onConnected(event: ClientNegotiationCompleteEvent) {
         logger.info("Connected!")
@@ -167,18 +158,40 @@ class IrcRouterService() : RouterService(), InitializingBean {
          *
          * Then we just iterate through all the channels, and if they're autojoined, join them.
          */
-        channels.split(",").forEach { channel ->
-            channelService.update(MessageSource.IRC, host, channel, null, true)
+        ircServiceConfiguration.channels.split(",").forEach { channel ->
+            channelService.update(
+                MessageSource.IRC,
+                ircServiceConfiguration.host,
+                channel,
+                null,
+                true
+            )
         }
         channelService
             .findAllAutojoinedChannels()
             .mapNotNull { channel -> channel.name }
             .forEach { channel ->
-                var channelRef = channelService.getChannel(MessageSource.IRC, host, channel)
+                var channelRef =
+                    channelService.getChannel(
+                        MessageSource.IRC,
+                        ircServiceConfiguration.host,
+                        channel
+                    )
                 if (channelRef.isEmpty) {
                     // this is specifically marked as an autojoin channel. Make it so.
-                    channelService.update(MessageSource.IRC, host, channel, null, true)
-                    channelRef = channelService.getChannel(MessageSource.IRC, host, channel)
+                    channelService.update(
+                        MessageSource.IRC,
+                        ircServiceConfiguration.host,
+                        channel,
+                        null,
+                        true
+                    )
+                    channelRef =
+                        channelService.getChannel(
+                            MessageSource.IRC,
+                            ircServiceConfiguration.host,
+                            channel
+                        )
                 }
                 if (channelRef.get().autoJoin == true) {
                     join(channel)
@@ -186,6 +199,7 @@ class IrcRouterService() : RouterService(), InitializingBean {
             }
     }
 
+    @Suppress("unused")
     @Handler
     fun onChannelMessage(event: ChannelMessageEvent) {
         // not a private message, let's log it.
@@ -194,17 +208,17 @@ class IrcRouterService() : RouterService(), InitializingBean {
             channel = event.channel.name,
             message = event.message,
             source = MessageSource.IRC,
-            server = this.host,
+            server = ircServiceConfiguration.host,
             type = LogEventType.MESSAGE,
         )
         // don't dispatch anything if *we* posted it!
-        if (event.actor.nick != nick) {
+        if (event.actor.nick != ircServiceConfiguration.nick) {
             dispatch(
                 routerMessage {
                     content = event.message
                     messageSource = MessageSource.IRC
                     scope = MessageScope.PUBLIC
-                    server = host
+                    server = ircServiceConfiguration.host
                     source = event.actor.nick
                     context = event.channel.name
                     cloak = event.actor.host
@@ -213,42 +227,45 @@ class IrcRouterService() : RouterService(), InitializingBean {
         }
     }
 
+    @Suppress("unused")
     @Handler
     fun onChannelJoinedEvent(event: RequestedChannelJoinCompleteEvent) {
         channelService.update(
             MessageSource.IRC,
-            host,
+            ircServiceConfiguration.host,
             event.channel.name,
             event.channel.topic.value.getOrNull()
         )
         channelService.logEvent(
-            nick,
+            ircServiceConfiguration.nick,
             event.channel.name,
             "",
             MessageSource.IRC,
-            this.host,
+            ircServiceConfiguration.host,
             LogEventType.JOIN
         )
     }
 
+    @Suppress("unused")
     @Handler
     fun onChannelTopicChangeEvent(event: ChannelTopicEvent) {
         channelService.update(
             MessageSource.IRC,
-            host,
+            ircServiceConfiguration.host,
             event.channel.name,
             event.channel.topic.value.getOrNull()
         )
         channelService.logEvent(
-            nick = nick,
+            nick = ircServiceConfiguration.nick,
             channel = event.channel.name,
             message = event.channel.topic.value.getOrNull(),
             source = MessageSource.IRC,
-            server = this.host,
+            server = ircServiceConfiguration.host,
             type = LogEventType.TOPIC,
         )
     }
 
+    @Suppress("unused")
     @Handler
     fun onUserPart(event: ChannelPartEvent) {
         channelService.logEvent(
@@ -256,7 +273,7 @@ class IrcRouterService() : RouterService(), InitializingBean {
             channel = event.channel.name,
             message = "parted",
             source = MessageSource.IRC,
-            server = this.host,
+            server = ircServiceConfiguration.host,
             type = LogEventType.PART
         )
     }
@@ -280,6 +297,7 @@ class IrcRouterService() : RouterService(), InitializingBean {
         }
     }
 
+    @Suppress("unused")
     @Handler
     fun onPrivateMessage(event: PrivateMessageEvent) {
         logger.debug("private message received: {}", event)
@@ -289,11 +307,11 @@ class IrcRouterService() : RouterService(), InitializingBean {
             "",
             event.message,
             MessageSource.IRC,
-            host,
+            ircServiceConfiguration.host,
             LogEventType.PRIVMSG
         )
         // don't dispatch anything if *we* posted it! even if it's a privmsg!
-        if (event.actor.nick != nick) {
+        if (event.actor.nick != ircServiceConfiguration.nick) {
             val message = routerMessage {
                 content = event.message
                 messageSource = MessageSource.IRC
@@ -311,21 +329,36 @@ class IrcRouterService() : RouterService(), InitializingBean {
 
     fun mute(channelName: String, muteStatus: Boolean) {
         logger.debug("muting {} with {}", channelName, muteStatus)
-        channelService.mute(MessageSource.IRC, host, channelName, muteStatus)
+        channelService.mute(
+            MessageSource.IRC,
+            ircServiceConfiguration.host,
+            channelName,
+            muteStatus
+        )
     }
 
     fun autojoin(channelName: String, autoJoinStatus: Boolean) {
         logger.debug("setting autojoin in {} with {}", channelName, autoJoinStatus)
-        channelService.autojoin(MessageSource.IRC, host, channelName, autoJoinStatus)
+        channelService.autojoin(
+            MessageSource.IRC,
+            ircServiceConfiguration.host,
+            channelName,
+            autoJoinStatus
+        )
     }
 
     fun visible(channelName: String, visible: Boolean) {
         logger.debug("setting visible in {} with {}", channelName, visible)
-        channelService.visible(MessageSource.IRC, host, channelName, visible)
+        channelService.visible(
+            MessageSource.IRC,
+            ircServiceConfiguration.host,
+            channelName,
+            visible
+        )
     }
 
     fun logged(channelName: String, logged: Boolean) {
         logger.debug("setting logged in {} with {}", channelName, logged)
-        channelService.logged(MessageSource.IRC, host, channelName, logged)
+        channelService.logged(MessageSource.IRC, ircServiceConfiguration.host, channelName, logged)
     }
 }
