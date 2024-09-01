@@ -1,19 +1,48 @@
 /* Joseph B. Ottinger (C)2024 */
 package com.enigmastation.streampack.urltitle.operation
 
+import com.enigmastation.streampack.whiteboard.model.MessageSource
+import com.enigmastation.streampack.whiteboard.model.routerMessage
 import java.util.stream.Stream
+import kotlin.test.Test
+import kotlin.test.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
 
+@SpringBootTest
 class URLTitleOperationTests {
+    @Autowired lateinit var urlTitleOperation: URLTitleOperation
+
     @ParameterizedTest
     @MethodSource("urlSimilarityInputs")
     fun `url similarity`(url: String, title: String, minimumSimilarity: Double) {
         // println(URLTitleOperation.cleanUrl(url))
         // println(URLTitleOperation.calculateJaccardSimilarity(url, title))
         assertTrue(URLTitleOperation.calculateJaccardSimilarity(url, title) >= minimumSimilarity)
+    }
+
+    @Test
+    fun `3-reject messages from invalid sources`() {
+        assertFalse(
+            urlTitleOperation.canHandle(
+                routerMessage {
+                    content = "https://enigmastation.com/"
+                    messageSource = MessageSource.DISCORD
+                }
+            )
+        )
+        assertTrue(
+            urlTitleOperation.canHandle(
+                routerMessage {
+                    content = "https://enigmastation.com/"
+                    messageSource = MessageSource.IRC
+                }
+            )
+        )
     }
 
     companion object {
