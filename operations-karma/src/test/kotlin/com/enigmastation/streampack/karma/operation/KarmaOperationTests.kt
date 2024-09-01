@@ -30,13 +30,16 @@ class KarmaOperationTests {
     @BeforeTest
     fun `clear all`() {
         karmaEntryRepository.deleteAll()
+        setKarmaOperation.commentsEnabled = true
     }
 
     fun verify(message: RouterMessage?, substring: String) {
         val content =
             message?.content
                 ?: if (substring.isNotEmpty()) {
-                    throw IllegalArgumentException("Message content is invalid: $message")
+                    throw IllegalArgumentException(
+                        "Message content is invalid: $message, for $substring"
+                    )
                 } else return
         if (!content.lowercase().contains(substring.lowercase())) {
             throw IllegalArgumentException(

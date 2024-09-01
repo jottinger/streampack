@@ -6,14 +6,24 @@ import com.enigmastation.streampack.karma.service.KarmaEntryService
 import com.enigmastation.streampack.whiteboard.model.RouterMessage
 import com.enigmastation.streampack.whiteboard.model.RouterOperation
 import java.util.regex.Pattern
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Service
 
+@ConfigurationProperties("streampack.karma")
 @Service
-class SetKarmaOperation(val karmaEntryService: KarmaEntryService) :
-    RouterOperation(priority = 20), KarmaOperation {
+class SetKarmaOperation() : RouterOperation(priority = 20), KarmaOperation {
+    @Autowired lateinit var karmaEntryService: KarmaEntryService
+    var commentsEnabled = true
+
     override fun canHandle(message: RouterMessage): Boolean {
         val translatedContent = message.content.fixArrows()
-        return operationPattern.matcher(translatedContent).find()
+        val matches = operationPattern.matcher(translatedContent)
+        return if (matches.find()) {
+            !(commentsEnabled == false && matches.group(3).trim().isNotEmpty())
+        } else {
+            false
+        }
     }
 
     override fun handleMessage(message: RouterMessage): RouterMessage? {
@@ -58,7 +68,7 @@ class SetKarmaOperation(val karmaEntryService: KarmaEntryService) :
 
     companion object {
         private val operationPattern =
-            Pattern.compile("^(?<nick>.+)(?<service>\\+{2}|--).*\$", Pattern.COMMENTS)
+            Pattern.compile("^(?<nick>.+)(?<service>\\+{2}|--)(.*)\$", Pattern.COMMENTS)
         private val operationValues = mapOf("--" to -1, "++" to 1)
     }
 }
