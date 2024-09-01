@@ -75,8 +75,7 @@ class Router(
                         when (message.process) {
                             true -> {
                                 // for each transformer, we see if it is interested in the message,
-                                // and
-                                // if so, we collect the responses by priority
+                                // and if so, we look for the responses by priority
                                 var response: RouterMessage? = null
                                 for (operation in routerOperations.sorted()) {
                                     response = evaluateAndDispatch(operation, message, runner)
@@ -100,7 +99,7 @@ class Router(
                                                             runner
                                                         )
                                                     response = internalResponse ?: original
-                                                    logger.info(
+                                                    logger.debug(
                                                         "{} {} {}",
                                                         transformer.name,
                                                         response,
@@ -123,7 +122,7 @@ class Router(
                             .filter { service -> service.canHandle(captured) }
                             // we don't care about timeouts for router services.
                             // They just get the messages, fire and forget.
-                            .forEach { service -> runner.submit { service.receive(captured) } }
+                            .forEach { service -> service.receive(captured) }
                     }
                 }
             }
