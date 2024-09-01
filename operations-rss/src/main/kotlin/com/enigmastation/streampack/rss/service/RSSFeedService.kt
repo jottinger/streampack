@@ -25,11 +25,9 @@ import java.time.ZoneId
 import java.util.Optional
 import org.hibernate.Hibernate
 import org.slf4j.LoggerFactory
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
 
 @Service
-@ConditionalOnProperty(prefix = "streampack.rss", name = ["enabled"], matchIfMissing = false)
 class RSSFeedService(
     val rssFeedRepository: RSSFeedRepository,
     val rssEntryRepository: RSSEntryRepository,
