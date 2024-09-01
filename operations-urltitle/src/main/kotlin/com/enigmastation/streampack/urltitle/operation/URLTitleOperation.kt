@@ -15,13 +15,21 @@ import java.util.regex.Pattern
 import kotlin.text.Regex
 import okhttp3.Response
 import okhttp3.internal.closeQuietly
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class URLTitleOperation(var jsoupService: JsoupService, var okHttpService: OkHttpService) :
-    RouterOperation(priority = 11) {
+class URLTitleOperation() : RouterOperation(priority = 91) {
+    @Autowired lateinit var jsoupService: JsoupService
+    @Autowired lateinit var okHttpService: OkHttpService
+    @Autowired lateinit var configuration: UrlTitleConfiguration
+
     override fun canHandle(message: RouterMessage): Boolean {
-        return pattern.matcher(message.content).find()
+        return if (configuration.services.contains(message.messageSource)) {
+            pattern.matcher(message.content).find()
+        } else {
+            false
+        }
     }
 
     override fun handleMessage(message: RouterMessage): RouterMessage? {
