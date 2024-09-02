@@ -43,11 +43,11 @@
             <artifactId>service-discord</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>com.enigmastation.streampack</groupId>
-            <artifactId>service-artemis</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.enigmastation.streampack</groupId>-->
+<!--            <artifactId>service-artemis</artifactId>-->
+<!--            <version>0.0.1-SNAPSHOT</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>com.enigmastation.streampack</groupId>
             <artifactId>operations-factoid</artifactId>
@@ -66,6 +66,11 @@
         <dependency>
             <groupId>com.enigmastation.streampack</groupId>
             <artifactId>operations-karma</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.enigmastation.streampack</groupId>
+            <artifactId>operations-summarize</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
