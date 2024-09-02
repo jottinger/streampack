@@ -11,7 +11,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-@ConditionalOnProperty(prefix = "streampack.rss", name = ["enabled"], matchIfMissing = false)
 interface RSSEntryRepository : JpaRepository<RSSEntry, UUID> {
     fun findByUrl(url: URL): Optional<RSSEntry>
 
