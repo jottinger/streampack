@@ -1,19 +1,38 @@
 /* Joseph B. Ottinger (C)2024 */
 package com.enigmastation.streampack.web.service
 
+import com.google.common.cache.CacheBuilder
+import com.google.common.cache.CacheLoader
+import com.google.common.cache.LoadingCache
 import java.net.URL
+import java.util.concurrent.TimeUnit
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class JsoupService {
-    fun get(url: String): Document = Jsoup.connect(url).userAgent(USER_AGENT).get()
+class JsoupService() {
+    @Autowired lateinit var okHttpService: OkHttpService
 
-    fun get(url: URL): Document = get(url.toString())
+    var cache: LoadingCache<String, Document> =
+        CacheBuilder.newBuilder()
+            .maximumSize(100)
+            .expireAfterAccess(5, TimeUnit.MINUTES)
+            .build(
+                object : CacheLoader<String, Document>() {
+                    override fun load(key: String): Document {
+                        return loadUrl(key)
+                    }
+                }
+            )
 
-    companion object {
-        const val USER_AGENT =
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
+    private fun loadUrl(url: String): Document {
+        val content = okHttpService.getUrl(url)
+        return Jsoup.parse(content)
     }
+
+    final fun get(url: String): Document = cache.get(url)
+
+    final fun get(url: URL): Document = cache.get(url.toString())
 }

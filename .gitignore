@@ -43,6 +43,7 @@ build/
 pgdata/
 artemisdata/
 .DS_Store
+.cache
 
 ### github
 pom.xml.tag
