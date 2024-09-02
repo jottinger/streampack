@@ -1,12 +1,14 @@
 /* Joseph B. Ottinger (C)2024 */
 package com.enigmastation.streampack.summarize.service
 
+import org.junit.jupiter.api.Tag
 import kotlin.test.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
+@Tag("integration")
 class SummarizeClientTests {
     @Autowired lateinit var service: SummarizeService
 
