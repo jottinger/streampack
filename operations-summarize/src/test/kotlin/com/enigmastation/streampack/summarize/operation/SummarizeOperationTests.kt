@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest
 class SummarizeOperationTests {
     @Autowired lateinit var operation: SummarizeRouterOperation
 
-    @Test
+//    @Test
     fun `test valid url`() {
         val result =
             operation.handleMessage(

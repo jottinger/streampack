@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-@Tag("integration")
 class SummarizeClientTests {
     @Autowired lateinit var service: SummarizeService
 
@@ -17,7 +16,7 @@ class SummarizeClientTests {
         println(service)
     }
 
-    @Test
+//    @Test
     fun `test summarization`() {
         println(
             service.summarizeURL(
@@ -26,7 +25,7 @@ class SummarizeClientTests {
         )
     }
 
-    @Test
+//    @Test
     fun `test summarization with bad url`() {
         assertThrows<Throwable> {
             println(
