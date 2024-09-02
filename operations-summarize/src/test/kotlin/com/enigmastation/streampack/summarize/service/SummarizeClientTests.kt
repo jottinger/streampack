@@ -1,7 +1,6 @@
 /* Joseph B. Ottinger (C)2024 */
 package com.enigmastation.streampack.summarize.service
 
-import org.junit.jupiter.api.Tag
 import kotlin.test.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,7 +15,7 @@ class SummarizeClientTests {
         println(service)
     }
 
-//    @Test
+    //    @Test
     fun `test summarization`() {
         println(
             service.summarizeURL(
@@ -25,7 +24,7 @@ class SummarizeClientTests {
         )
     }
 
-//    @Test
+    //    @Test
     fun `test summarization with bad url`() {
         assertThrows<Throwable> {
             println(

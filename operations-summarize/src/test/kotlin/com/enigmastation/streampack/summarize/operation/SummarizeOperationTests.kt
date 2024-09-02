@@ -4,7 +4,6 @@ package com.enigmastation.streampack.summarize.operation
 import com.enigmastation.streampack.whiteboard.model.MessageSource
 import com.enigmastation.streampack.whiteboard.model.routerMessage
 import org.junit.jupiter.api.Tag
-import kotlin.test.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
@@ -13,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest
 class SummarizeOperationTests {
     @Autowired lateinit var operation: SummarizeRouterOperation
 
-//    @Test
+    //    @Test
     fun `test valid url`() {
         val result =
             operation.handleMessage(
