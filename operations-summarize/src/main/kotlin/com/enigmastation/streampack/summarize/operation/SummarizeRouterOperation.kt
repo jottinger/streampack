@@ -8,15 +8,15 @@ import com.enigmastation.streampack.summarize.model.SummarizeConfiguration
 import com.enigmastation.streampack.summarize.service.SummarizeService
 import com.enigmastation.streampack.whiteboard.model.RouterMessage
 import com.enigmastation.streampack.whiteboard.model.RouterOperation
-import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.temporal.ChronoUnit
+import org.springframework.stereotype.Service
 
 @Service
 class SummarizeRouterOperation(
     val configuration: SummarizeConfiguration,
     val summarizeService: SummarizeService
-) : RouterOperation(name="SummarizeOperation", timeout=Duration.of(2,ChronoUnit.MINUTES)) {
+) : RouterOperation(name = "SummarizeOperation", timeout = Duration.of(2, ChronoUnit.MINUTES)) {
     override fun handleMessage(message: RouterMessage): RouterMessage? {
         if (!canHandle(message)) {
             return null

@@ -10,4 +10,13 @@ import org.springframework.stereotype.Component
 class UrlTitleConfiguration {
     // normally applies ONLY to message sources that don't auto-expand urls as part of their clients
     var services = arrayOf(MessageSource.IRC)
+    var defaultIgnoredHosts =
+        arrayOf(
+            "/twitter.com",
+            "/x.com",
+            "/bpa.st",
+            "/dpaste.com",
+            "/pastebin.com",
+            "/pastebin.org"
+        )
 }

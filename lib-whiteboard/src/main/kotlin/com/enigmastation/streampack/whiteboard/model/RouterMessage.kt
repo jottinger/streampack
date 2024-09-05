@@ -1,6 +1,7 @@
 /* Joseph B. Ottinger (C)2024 */
 package com.enigmastation.streampack.whiteboard.model
 
+import com.enigmastation.streampack.extensions.compress
 import java.time.OffsetDateTime
 
 data class RouterMessage(
@@ -27,5 +28,9 @@ data class RouterMessage(
             source = target,
             timestamp = OffsetDateTime.now()
         )
+    }
+
+    fun compress(): String {
+        return content.compress()
     }
 }

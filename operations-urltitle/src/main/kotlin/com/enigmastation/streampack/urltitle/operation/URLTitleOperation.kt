@@ -7,21 +7,17 @@ import com.enigmastation.streampack.extensions.joinToStringWithAnd
 import com.enigmastation.streampack.extensions.pluralize
 import com.enigmastation.streampack.extensions.possessive
 import com.enigmastation.streampack.extensions.toURL
-import com.enigmastation.streampack.web.service.JsoupService
-import com.enigmastation.streampack.web.service.OkHttpService
+import com.enigmastation.streampack.urltitle.service.UrlTitleService
 import com.enigmastation.streampack.whiteboard.model.RouterMessage
 import com.enigmastation.streampack.whiteboard.model.RouterOperation
 import java.util.regex.Pattern
 import kotlin.text.Regex
-import okhttp3.Response
-import okhttp3.internal.closeQuietly
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
 class URLTitleOperation() : RouterOperation(priority = 91) {
-    @Autowired lateinit var jsoupService: JsoupService
-    @Autowired lateinit var okHttpService: OkHttpService
+    @Autowired lateinit var urlTitleService: UrlTitleService
     @Autowired lateinit var configuration: UrlTitleConfiguration
 
     override fun canHandle(message: RouterMessage): Boolean {
@@ -40,29 +36,24 @@ class URLTitleOperation() : RouterOperation(priority = 91) {
         if (foundUrls.isEmpty()) return null
 
         val titles =
-            foundUrls
-                // ignore twitter for now! they parse... uh... poorly
-                .filter { !it.contains("/x.com", true) }
-                .filter { !it.contains("/twitter.com", true) }
+            urlTitleService
+                .filteredUrls(foundUrls)
                 .mapNotNull { url ->
                     try {
-                        url to getFinalURL(url)
+                        url to urlTitleService.getFinalURL(url)
                     } catch (_: Throwable) {
                         null
                     }
                 }
-                .mapNotNull { url ->
-                    try {
-                        logger.debug("url in message: {}, actual url: {}", url.first, url.second)
-                        val doc = jsoupService.get(url.second)
-                        url.first to (url.second to doc.title())
-                    } catch (_: Throwable) {
-                        null
-                    }
-                }
+                .mapNotNull { url -> urlTitleService.getTitle(url) }
                 .filter { it.second.second != null }
+                .map {
+                    @Suppress("UNCHECKED_CAST")
+                    it as Pair<String, Pair<String, String>>
+                }
                 .filter {
-                    val similarity = calculateJaccardSimilarity(it.first, it.second.second)
+                    val similarity =
+                        urlTitleService.calculateJaccardSimilarity(it.first, it.second.second)
                     logger.info(
                         "url: {}, title: {}, similarity {}",
                         it.first,
@@ -82,27 +73,6 @@ class URLTitleOperation() : RouterOperation(priority = 91) {
         } else {
             null
         }
-    }
-
-    fun getFinalURL(url: String): String {
-        val client = okHttpService.client(false)
-        var currentUrl = url
-        var response: Response
-
-        do {
-            val request = okHttpService.buildRequest(currentUrl)
-
-            response = client.newCall(request).execute()
-
-            // If the response is a redirect, get the "Location" header
-            val locationHeader = response.header("Location")
-            if (locationHeader != null) {
-                currentUrl = locationHeader
-            }
-            response.closeQuietly()
-        } while (response.isRedirect)
-
-        return currentUrl
     }
 
     companion object {
@@ -139,17 +109,5 @@ class URLTitleOperation() : RouterOperation(priority = 91) {
                 .replace("/", " ")
                 .replace(Regex("[0-9]+"), "")
                 .compress()
-
-        fun calculateJaccardSimilarity(url: String, title: String): Double {
-            val cleanUrl = cleanUrl(url)
-
-            val urlWords = tokenize(cleanUrl)
-            val titleWords = tokenize("$title ${cleanUrl(extractHost(url))}")
-
-            val intersection = urlWords.intersect(titleWords).size
-            val union = urlWords.union(titleWords).size
-
-            return if (union == 0) 0.0 else intersection.toDouble() / union.toDouble()
-        }
     }
 }
