@@ -12,11 +12,6 @@ import com.enigmastation.streampack.whiteboard.model.RouterMessage
 import com.enigmastation.streampack.whiteboard.model.RouterOperation
 import com.github.mpe85.grampa.createGrammar
 import com.github.mpe85.grampa.parser.Parser
-import com.google.common.cache.CacheBuilder
-import com.google.common.cache.CacheLoader
-import com.google.common.cache.LoadingCache
-import java.util.concurrent.TimeUnit
-import java.util.regex.Pattern
 import kotlin.text.Regex
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -27,18 +22,6 @@ class URLTitleOperation() : RouterOperation(priority = 91) {
     @Autowired lateinit var configuration: UrlTitleConfiguration
     var grammar = UrlTitleGrammar::class.createGrammar()
     var parser = Parser(grammar)
-
-    var cache: LoadingCache<String, Set<String>> =
-        CacheBuilder.newBuilder()
-            .maximumSize(100)
-            .expireAfterAccess(5, TimeUnit.MINUTES)
-            .build(
-                object : CacheLoader<String, Set<String>>() {
-                    override fun load(key: String): Set<String> {
-                        return setOf()
-                    }
-                }
-            )
 
     override fun canHandle(message: RouterMessage): Boolean {
         return if (configuration.services.contains(message.messageSource)) {
@@ -97,16 +80,6 @@ class URLTitleOperation() : RouterOperation(priority = 91) {
     }
 
     companion object {
-        val pattern = Pattern.compile("(?:(http|https)(://))")
-
-        fun findUrls(content: String): List<String> {
-            // okay, let's find all of the HTTP-ish URLs.
-            return content
-                .compress()
-                .split(" ")
-                .filter { pattern.matcher(it.lowercase()).find() }
-                .toList()
-        }
 
         fun tokenize(text: String): Set<String> {
             return text
