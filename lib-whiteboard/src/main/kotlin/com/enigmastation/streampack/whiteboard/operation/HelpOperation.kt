@@ -4,13 +4,18 @@ package com.enigmastation.streampack.whiteboard.operation
 import com.enigmastation.streampack.extensions.compress
 import com.enigmastation.streampack.whiteboard.model.RouterMessage
 import com.enigmastation.streampack.whiteboard.model.RouterOperation
+import com.github.mpe85.grampa.createGrammar
+import com.github.mpe85.grampa.parser.Parser
+import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.ApplicationContext
 import org.springframework.stereotype.Service
 
 @Service
-class HelpOperation(val context: ApplicationContext) : RouterOperation() {
+class HelpOperation(val context: ApplicationContext) : RouterOperation(), InitializingBean {
+    lateinit var parser: Parser<String>
+
     override fun canHandle(message: RouterMessage): Boolean {
-        return message.content.compress().startsWith("~help")
+        return parser.run(message.content).matched
     }
 
     override fun description(): String {
@@ -25,8 +30,9 @@ class HelpOperation(val context: ApplicationContext) : RouterOperation() {
         if (!canHandle(message)) {
             return null
         }
-        val operation = message.content.compress().removePrefix("~help").compress().split(" ")[0]
-        return if (operation.isEmpty()) {
+        val operation = parser.run(message.content).stackTop
+
+        return if (operation.isNullOrEmpty()) {
             message.respondWith(
                 ("Try \"~list operations\" to get a list of operations; then, \"~help [operation name]\"")
             )
@@ -45,5 +51,11 @@ class HelpOperation(val context: ApplicationContext) : RouterOperation() {
                 null
             }
         }
+    }
+
+    override fun afterPropertiesSet() {
+        var operations =
+            context.getBeansOfType(RouterOperation::class.java).values.filterNotNull().toList()
+        parser = Parser(HelpOperationGrammar::class.createGrammar(operations))
     }
 }
