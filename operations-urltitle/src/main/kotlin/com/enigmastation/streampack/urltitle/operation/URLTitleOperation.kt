@@ -10,6 +10,12 @@ import com.enigmastation.streampack.extensions.toURL
 import com.enigmastation.streampack.urltitle.service.UrlTitleService
 import com.enigmastation.streampack.whiteboard.model.RouterMessage
 import com.enigmastation.streampack.whiteboard.model.RouterOperation
+import com.github.mpe85.grampa.createGrammar
+import com.github.mpe85.grampa.parser.Parser
+import com.google.common.cache.CacheBuilder
+import com.google.common.cache.CacheLoader
+import com.google.common.cache.LoadingCache
+import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 import kotlin.text.Regex
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,10 +25,25 @@ import org.springframework.stereotype.Service
 class URLTitleOperation() : RouterOperation(priority = 91) {
     @Autowired lateinit var urlTitleService: UrlTitleService
     @Autowired lateinit var configuration: UrlTitleConfiguration
+    var grammar = UrlTitleGrammar::class.createGrammar()
+    var parser = Parser(grammar)
+
+    var cache: LoadingCache<String, Set<String>> =
+        CacheBuilder.newBuilder()
+            .maximumSize(100)
+            .expireAfterAccess(5, TimeUnit.MINUTES)
+            .build(
+                object : CacheLoader<String, Set<String>>() {
+                    override fun load(key: String): Set<String> {
+                        return setOf()
+                    }
+                }
+            )
 
     override fun canHandle(message: RouterMessage): Boolean {
         return if (configuration.services.contains(message.messageSource)) {
-            pattern.matcher(message.content).find()
+            var result = parser.run(message.content)
+            return result.stack.isNotEmpty()
         } else {
             false
         }
@@ -32,8 +53,8 @@ class URLTitleOperation() : RouterOperation(priority = 91) {
         if (!canHandle(message)) {
             return null
         }
-        val foundUrls = findUrls(message.content)
-        if (foundUrls.isEmpty()) return null
+        var result = parser.run(message.content)
+        val foundUrls = result.stack.toList()
 
         val titles =
             urlTitleService
