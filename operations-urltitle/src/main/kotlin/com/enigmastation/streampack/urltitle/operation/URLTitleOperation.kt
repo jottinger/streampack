@@ -10,7 +10,8 @@ import com.enigmastation.streampack.extensions.toURL
 import com.enigmastation.streampack.urltitle.service.UrlTitleService
 import com.enigmastation.streampack.whiteboard.model.RouterMessage
 import com.enigmastation.streampack.whiteboard.model.RouterOperation
-import java.util.regex.Pattern
+import com.github.mpe85.grampa.createGrammar
+import com.github.mpe85.grampa.parser.Parser
 import kotlin.text.Regex
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -19,10 +20,13 @@ import org.springframework.stereotype.Service
 class URLTitleOperation() : RouterOperation(priority = 91) {
     @Autowired lateinit var urlTitleService: UrlTitleService
     @Autowired lateinit var configuration: UrlTitleConfiguration
+    var grammar = UrlTitleGrammar::class.createGrammar()
+    var parser = Parser(grammar)
 
     override fun canHandle(message: RouterMessage): Boolean {
         return if (configuration.services.contains(message.messageSource)) {
-            pattern.matcher(message.content).find()
+            var result = parser.run(message.content)
+            return result.stack.isNotEmpty()
         } else {
             false
         }
@@ -32,8 +36,8 @@ class URLTitleOperation() : RouterOperation(priority = 91) {
         if (!canHandle(message)) {
             return null
         }
-        val foundUrls = findUrls(message.content)
-        if (foundUrls.isEmpty()) return null
+        var result = parser.run(message.content)
+        val foundUrls = result.stack.toList()
 
         val titles =
             urlTitleService
@@ -76,16 +80,6 @@ class URLTitleOperation() : RouterOperation(priority = 91) {
     }
 
     companion object {
-        val pattern = Pattern.compile("(?:(http|https)(://))")
-
-        fun findUrls(content: String): List<String> {
-            // okay, let's find all of the HTTP-ish URLs.
-            return content
-                .compress()
-                .split(" ")
-                .filter { pattern.matcher(it.lowercase()).find() }
-                .toList()
-        }
 
         fun tokenize(text: String): Set<String> {
             return text

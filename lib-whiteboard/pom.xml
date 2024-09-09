@@ -59,5 +59,9 @@
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.github.mpe85</groupId>
+            <artifactId>grampa</artifactId>
+        </dependency>
     </dependencies>
 </project>
