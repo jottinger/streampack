@@ -8,4 +8,11 @@ abstract class ExtendedGrammar<T> : AbstractGrammar<T>() {
     open fun url(): Rule<T> = sequence(choice(string("https://"), string("http://")), word())
 
     open fun word(): Rule<T> = sequence(oneOrMore(sequence(testNot(whitespace()), anyChar())))
+
+    open fun channel(): Rule<T> =
+        sequence(char('#'), oneOrMore(choice(letter(), digit(), char('-'), char('_'))))
+
+    open fun optionalWsp(): Rule<T> = zeroOrMore(whitespace())
+
+    open fun wsp(): Rule<T> = oneOrMore(whitespace())
 }

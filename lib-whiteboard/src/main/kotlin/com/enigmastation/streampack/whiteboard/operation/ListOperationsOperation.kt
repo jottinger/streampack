@@ -1,7 +1,6 @@
 /* Joseph B. Ottinger (C)2024 */
 package com.enigmastation.streampack.whiteboard.operation
 
-import com.enigmastation.streampack.extensions.compress
 import com.enigmastation.streampack.extensions.joinToStringWithAnd
 import com.enigmastation.streampack.whiteboard.model.RouterMessage
 import com.enigmastation.streampack.whiteboard.model.RouterOperation
@@ -10,9 +9,10 @@ import org.springframework.stereotype.Service
 
 @Service
 class ListOperationsOperation(val context: ApplicationContext) : RouterOperation() {
-    override fun canHandle(message: RouterMessage): Boolean {
+    val parser = ListOperationGrammar.parser()
 
-        return message.content.compress().equals("~list operations", true)
+    override fun canHandle(message: RouterMessage): Boolean {
+        return parser.run(message.content).matched
     }
 
     override fun description(): String {

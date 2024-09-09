@@ -89,7 +89,7 @@ class RouterTests {
     @Order(7)
     fun `test help operation`() {
         otherService.lastMessage = null
-        router.dispatch(routerMessage { content = "~help SampleHelloTransformer" })
+        router.dispatch(routerMessage { content = "~help   SampleHelloTransformer" })
         watchForTimeout({ otherService.lastMessage })
         Thread.sleep(50)
         assertNotNull(otherService.lastMessage)
