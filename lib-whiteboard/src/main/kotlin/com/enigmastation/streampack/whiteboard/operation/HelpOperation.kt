@@ -4,7 +4,6 @@ package com.enigmastation.streampack.whiteboard.operation
 import com.enigmastation.streampack.extensions.compress
 import com.enigmastation.streampack.whiteboard.model.RouterMessage
 import com.enigmastation.streampack.whiteboard.model.RouterOperation
-import com.github.mpe85.grampa.createGrammar
 import com.github.mpe85.grampa.parser.Parser
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.ApplicationContext
@@ -56,6 +55,6 @@ class HelpOperation(val context: ApplicationContext) : RouterOperation(), Initia
     override fun afterPropertiesSet() {
         var operations =
             context.getBeansOfType(RouterOperation::class.java).values.filterNotNull().toList()
-        parser = Parser(HelpOperationGrammar::class.createGrammar(operations))
+        parser = HelpOperationGrammar.parser(operations)
     }
 }
