@@ -10,7 +10,12 @@ Getting a factoid has this basic grammar:
 
 A term is able to be multiple words.
 
-Read attributes are: INFO, URLS|URL, TAGS|TAG, SEEALSO, LANGUAGES|LANGUAGE.
+Read attributes are: `TEXT`, `URLS`|`URL`, `TAGS`|`TAG`, `SEEALSO`, `LANGUAGES`|`LANGUAGE`, `INFO`.
+
+`INFO` describes what read attributes are set for a given term.
+
+> Eventually it'd be nice to provide parameters for read factoids such that the query can change the text of the factoid
+> for display.
 
 Setting a factoid has *this* basic grammar:
 
@@ -18,7 +23,7 @@ Setting a factoid has *this* basic grammar:
 ~term[.writeattribute][=[value]]
 ```
 
-Write attributes are: INFO, URLS|URL, TAGS|TAG, SEEALSO, LANGUAGES|LANGUAGE, FORGET.
+Write attributes are: `TEXT`, `URLS`|`URL`, `TAGS`|`TAG`, `SEEALSO`, `LANGUAGES`|`LANGUAGE`, `FORGET`.
 
 `FORGET` is special in that it has no value associated with it; it removes the factoid from the database.
 
