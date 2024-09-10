@@ -3,6 +3,7 @@
 Factoids have two primary operations: get and set.
 
 ## Get factoid
+
 Getting a factoid has this basic grammar:
 
 ```
@@ -23,9 +24,18 @@ It'd be nice to be able to set a factoid with placeholder: `{1}`, `{2}`, etc. Th
 ~term foo bar
 ```
 
-For this query, if `term.text` has a value of `Hey look, {1}, it's a {2}` then this would get rendered as `Hey look, foo, it's a bar`. This requires a more complex search for `term` because the parser would first try to find `term foo bar` and, failing that, would then search for `term foo` (looking for a factoid that takes a single parameter), and then `term` (looking for a factoid that takes two parameters). The Factoid entries do have a "master record" that would have `term`, so the query would be quick (and indexed), but it's still multiple queries.
+For this query, if `term.text` has a value of `Hey look, {1}, it's a {2}` then this would get rendered as
+`Hey look, foo, it's a bar`. This requires a more complex search for `term` because the parser would first try to find
+`term foo bar` and, failing that, would then search for `term foo` (looking for a factoid that takes a single
+parameter), and then `term` (looking for a factoid that takes two parameters). The Factoid entries do have a "master
+record" that would have `term`, so the query would be quick (and indexed), but it's still multiple queries.
 
-It also needs to be considered what to do if the parameter count doesn't match up: if `term` has one parameter, does that mean `bar` is discarded and `foo` is used as a replacement token? Or is this an error condition?
+It also needs to be considered what to do if the parameter count doesn't match up: if `term` has one parameter, does
+that mean `bar` is discarded and `foo` is used as a replacement token? Or is this an error condition?
+
+What happens if `term` is used as a query when the text attribute has parameter substitution, and parameters are not
+supplied? Would we need defaults? (That would get verbose, unless we have an attribute for default parameters as
+well...)
 
 ## Set Factoid
 
@@ -43,4 +53,5 @@ If the `value` is not supplied for write attributes that have values, it removes
 
 ### Future enhancement for WRITE
 
-It'd be nice to be able to lock factoids cleanly. The API already supports this, but there's no command support for setting or querying locked status.
+It'd be nice to be able to lock factoids cleanly. The API already supports this, but there's no command support for
+setting or querying locked status.
