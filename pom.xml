@@ -20,6 +20,7 @@
         <module>lib-web</module>
         <module>lib-geocode</module>
         <module>lib-weather</module>
+        <module>lib-factoid</module>
         <module>service-irc</module>
         <module>service-discord</module>
         <module>service-artemis</module>
