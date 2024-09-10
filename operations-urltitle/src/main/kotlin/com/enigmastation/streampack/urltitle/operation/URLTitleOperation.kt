@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service
 class URLTitleOperation() : RouterOperation(priority = 91) {
     @Autowired lateinit var urlTitleService: UrlTitleService
     @Autowired lateinit var configuration: UrlTitleConfiguration
-    val parser = UrlTitleGrammar.parser()
+    private val parser = UrlTitleGrammar.parser()
 
     override fun canHandle(message: RouterMessage): Boolean {
         return if (configuration.services.contains(message.messageSource)) {

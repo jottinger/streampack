@@ -37,9 +37,9 @@ class RSSFeedOperation(val rssFeedService: RSSFeedService) : RouterOperation() {
             requireNonNull(action.action)
             requireNonNull(action.url)
             when (action.action) {
-                RSSActionOperation.ADD -> addFeed(action.url.toString(), message)
-                RSSActionOperation.DELETE -> deleteFeed(action.url.toString(), message)
-                RSSActionOperation.INFO -> listFeed(action.url.toString(), message)
+                RSSActionOperation.ADD -> addFeed(action.url!!, message)
+                RSSActionOperation.DELETE -> deleteFeed(action.url!!, message)
+                RSSActionOperation.INFO -> listFeed(action.url!!, message)
                 /* We should never get here, because the parser would fail. */
                 else ->
                     throw IllegalArgumentException(

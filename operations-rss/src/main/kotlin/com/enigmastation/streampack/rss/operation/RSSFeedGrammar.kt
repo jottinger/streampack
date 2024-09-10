@@ -1,7 +1,6 @@
 /* Joseph B. Ottinger (C)2024 */
 package com.enigmastation.streampack.rss.operation
 
-import com.enigmastation.streampack.extensions.toURL
 import com.enigmastation.streampack.rss.model.RSSAction
 import com.enigmastation.streampack.rss.model.RSSActionOperation
 import com.enigmastation.streampack.rules.ExtendedGrammar
@@ -31,7 +30,7 @@ open class RSSFeedGrammar : ExtendedGrammar<RSSAction>() {
                         )
                 },
                 wsp(),
-                sequence(url(), push { pop(it).setUrl(it.previousMatch!!.toString().toURL()) })
+                sequence(url(), push { pop(it).setUrl(it.previousMatch!!.toString()) })
             )
         )
 
