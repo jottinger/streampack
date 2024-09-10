@@ -10,8 +10,6 @@ import com.enigmastation.streampack.extensions.toURL
 import com.enigmastation.streampack.urltitle.service.UrlTitleService
 import com.enigmastation.streampack.whiteboard.model.RouterMessage
 import com.enigmastation.streampack.whiteboard.model.RouterOperation
-import com.github.mpe85.grampa.createGrammar
-import com.github.mpe85.grampa.parser.Parser
 import kotlin.text.Regex
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -20,8 +18,7 @@ import org.springframework.stereotype.Service
 class URLTitleOperation() : RouterOperation(priority = 91) {
     @Autowired lateinit var urlTitleService: UrlTitleService
     @Autowired lateinit var configuration: UrlTitleConfiguration
-    var grammar = UrlTitleGrammar::class.createGrammar()
-    var parser = Parser(grammar)
+    val parser = UrlTitleGrammar.parser()
 
     override fun canHandle(message: RouterMessage): Boolean {
         return if (configuration.services.contains(message.messageSource)) {

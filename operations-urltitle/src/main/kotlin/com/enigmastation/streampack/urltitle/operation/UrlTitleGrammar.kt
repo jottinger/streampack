@@ -2,6 +2,8 @@
 package com.enigmastation.streampack.urltitle.operation
 
 import com.enigmastation.streampack.rules.ExtendedGrammar
+import com.github.mpe85.grampa.createGrammar
+import com.github.mpe85.grampa.parser.Parser
 import com.github.mpe85.grampa.rule.Rule
 
 open class UrlTitleGrammar : ExtendedGrammar<String>() {
@@ -15,4 +17,8 @@ open class UrlTitleGrammar : ExtendedGrammar<String>() {
                 )
             )
         )
+
+    companion object {
+        fun parser() = Parser(UrlTitleGrammar::class.createGrammar())
+    }
 }

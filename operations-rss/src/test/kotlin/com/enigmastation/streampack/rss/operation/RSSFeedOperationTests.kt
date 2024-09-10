@@ -1,12 +1,16 @@
 /* Joseph B. Ottinger (C)2024 */
 package com.enigmastation.streampack.rss.operation
 
+import com.enigmastation.streampack.extensions.toURL
 import com.enigmastation.streampack.extensions.watchWithTimeout
+import com.enigmastation.streampack.rss.model.RSSAction
+import com.enigmastation.streampack.rss.model.RSSActionOperation
 import com.enigmastation.streampack.rss.repository.RSSEntryRepository
 import com.enigmastation.streampack.rss.repository.RSSFeedRepository
 import com.enigmastation.streampack.rss.service.RSSFeedService
 import com.enigmastation.streampack.whiteboard.model.MessageSource
 import com.enigmastation.streampack.whiteboard.model.routerMessage
+import java.util.stream.Stream
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -14,6 +18,9 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
@@ -24,7 +31,21 @@ class RSSFeedOperationTests {
     @Autowired lateinit var rssFeedRepository: RSSFeedRepository
 
     @Autowired lateinit var rssEntryRepository: RSSEntryRepository
+
     @Autowired lateinit var rssFeedService: RSSFeedService
+    val parser = RSSFeedGrammar.parser()
+
+    @ParameterizedTest
+    @MethodSource("grammarInputs")
+    fun `test grammar`(input: String, matched: Boolean, action: RSSAction?) {
+        val result = parser.run(input)
+        assertEquals(matched, result.matched)
+        result.stackTop?.let {
+            assertNotNull(action)
+            assertEquals(action.action, it.action)
+            assertEquals(action.url, it.url)
+        }
+    }
 
     @Test
     fun `context loads`() {
@@ -144,5 +165,33 @@ class RSSFeedOperationTests {
             }
         )
         assertTrue(rssFeedRepository.findAll().isEmpty())
+    }
+
+    companion object {
+        @JvmStatic
+        fun grammarInputs(): Stream<Arguments> =
+            Stream.of(
+                Arguments.of(
+                    "~rss add https://enigmastation.com/",
+                    true,
+                    RSSAction(RSSActionOperation.ADD, "https://enigmastation.com/".toURL())
+                ),
+                Arguments.of("~rss add htts://enigmastation.com/", false, null),
+                Arguments.of(
+                    "~rss delete https://enigmastation.com/",
+                    true,
+                    RSSAction(RSSActionOperation.DELETE, "https://enigmastation.com/".toURL())
+                ),
+                Arguments.of(
+                    "~rss info http://enigmastation.com",
+                    true,
+                    RSSAction(RSSActionOperation.INFO, "http://enigmastation.com".toURL())
+                ),
+                Arguments.of(
+                    "~ rss  info   https://enigmastation.com    ",
+                    true,
+                    RSSAction(RSSActionOperation.INFO, "https://enigmastation.com".toURL())
+                ),
+            )
     }
 }
