@@ -62,9 +62,14 @@ class GetFactoidOperation(val factoidService: FactoidService) : RouterOperation(
                         val attribute =
                             attributes.filter { it.attributeType == cmd.attribute }.firstOrNull()
                         if (attribute != null && (attribute.attributeValue ?: "").isNotEmpty()) {
-                            message.respondWith(
-                                attribute.attributeType!!.render(selector, attribute.attributeValue)
-                            )
+                            val value =
+                                when (attribute.attributeType!!) {
+                                    // we need to interpolate "seealso" values.
+                                    FactoidAttributeType.SEEALSO ->
+                                        renderSeeAlso(selector, factoidService, attribute)
+                                    else -> attribute.attributeValue
+                                }
+                            message.respondWith(attribute.attributeType!!.render(selector, value))
                         } else {
                             null
                         }
@@ -128,23 +133,7 @@ fun List<FactoidAttribute>.summarize(selector: String, factoidService: FactoidSe
             val attr = it.attributeType!!
             val attribute =
                 when (it.attributeType!!) {
-                    FactoidAttributeType.SEEALSO ->
-                        // we need to remove the selector from the attribute
-                        // value if it's there.
-                        it.attributeValue!!
-                            .split(",")
-                            .toList()
-                            .filterNot { it.equals(selector, ignoreCase = true) }
-                            // add the tilde if it's a real factoid (and
-                            // it's not there already)
-                            .map {
-                                if (factoidService.findBySelector(it).isNotEmpty()) {
-                                    "~${it.removePrefix("~")}"
-                                } else {
-                                    it.removePrefix("~")
-                                }
-                            }
-                            .joinToString(",")
+                    FactoidAttributeType.SEEALSO -> renderSeeAlso(selector, factoidService, it)
                     else -> it.attributeValue
                 }
             if (attribute!!.isNotEmpty()) {
@@ -155,4 +144,27 @@ fun List<FactoidAttribute>.summarize(selector: String, factoidService: FactoidSe
         }
         .joinToString(" ")
         .compress()
+}
+
+fun renderSeeAlso(
+    selector: String,
+    factoidService: FactoidService,
+    attribute: FactoidAttribute
+): String {
+    // we need to remove the selector from the attribute
+    // value if it's there.
+    return attribute.attributeValue!!
+        .split(",")
+        .toList()
+        .filterNot { it.equals(selector, ignoreCase = true) }
+        // add the tilde if it's a real factoid (and
+        // it's not there already)
+        .map {
+            if (factoidService.findBySelector(it).isNotEmpty()) {
+                "~${it.removePrefix("~")}"
+            } else {
+                it.removePrefix("~")
+            }
+        }
+        .joinToString(",")
 }

@@ -53,4 +53,15 @@ class GetFactoidOperationTests {
         logger.info("value for ~foo: {}", value)
         assertTrue(value.contains("URLs"))
     }
+
+    @Test
+    fun `28-test seealso interpolation`() {
+        setFactoidOperation.handleMessage(routerMessage { content = "~foo1=bar" })
+        setFactoidOperation.handleMessage(routerMessage { content = "~foo2=baz" })
+        setFactoidOperation.handleMessage(routerMessage { content = "~foo3.seealso=foo1,foo2" })
+        var message = getFactoidOperation.handleMessage(routerMessage { content = "~foo3" })
+        assertEquals("See also: ~foo1 and ~foo2", message?.content)
+        message = getFactoidOperation.handleMessage(routerMessage { content = "~foo3.seealso" })
+        assertEquals("See also: ~foo1 and ~foo2", message?.content)
+    }
 }
