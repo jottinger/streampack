@@ -96,6 +96,11 @@ class GetFactoidOperationTests {
                     "~foo8",
                     "foo8: Not enough arguments to replace placeholders. Expected at least 1 but got 0."
                 ),
+                Arguments.of(
+                    "~foo8 bar=<reply>foo is bar: $1",
+                    "~foo8 bar baz",
+                    "foo is bar: baz."
+                ),
             )
     }
 }
