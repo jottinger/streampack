@@ -31,6 +31,7 @@
         <module>operations-urltitle</module>
         <module>operations-summarize</module>
         <module>operations-weather</module>
+        <module>operations-specs</module>
         <module>application-base</module>
         <module>application-llm</module>
     </modules>
