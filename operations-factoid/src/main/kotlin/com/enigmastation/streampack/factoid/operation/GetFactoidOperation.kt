@@ -7,15 +7,17 @@ import com.enigmastation.streampack.extensions.matchCardinality
 import com.enigmastation.streampack.extensions.pluralize
 import com.enigmastation.streampack.factoid.entity.FactoidAttribute
 import com.enigmastation.streampack.factoid.model.FactoidAttributeType
-import com.enigmastation.streampack.factoid.operation.GetFactoidOperation.NotEnoughArgumentsException
 import com.enigmastation.streampack.factoid.service.FactoidService
 import com.enigmastation.streampack.whiteboard.model.RouterMessage
 import com.enigmastation.streampack.whiteboard.model.RouterOperation
 import org.springframework.stereotype.Service
 
+class NotEnoughArgumentsException(s: String) : Exception(s)
+
+class TooManyArgumentsException() : Exception()
+
 @Service
 class GetFactoidOperation(val factoidService: FactoidService) : RouterOperation() {
-    class NotEnoughArgumentsException(s: String) : Exception(s)
 
     override fun canHandle(message: RouterMessage): Boolean {
         // don't even consider anything that doesn't start with "~"
@@ -23,7 +25,7 @@ class GetFactoidOperation(val factoidService: FactoidService) : RouterOperation(
     }
 
     override fun handleMessage(message: RouterMessage): RouterMessage? {
-        try {
+        return try {
             val command = parseQuery(message.content)
             command?.let { cmd ->
                 val data = factoidService.findSelectorWithArguments(cmd.selector)
@@ -80,12 +82,9 @@ class GetFactoidOperation(val factoidService: FactoidService) : RouterOperation(
                             ) {
                                 val value =
                                     when (attribute.attributeType!!) {
-                                        FactoidAttributeType.TEXT ->
-                                            replaceParameters(
-                                                selector,
-                                                attribute.attributeValue!!,
-                                                arguments
-                                            )
+                                        FactoidAttributeType.TEXT -> {
+                                            renderTextAttribute(selector, attribute, arguments)
+                                        }
                                         // we need to interpolate "seealso" values.
                                         FactoidAttributeType.SEEALSO ->
                                             renderSeeAlso(selector, factoidService, attribute)
@@ -101,9 +100,11 @@ class GetFactoidOperation(val factoidService: FactoidService) : RouterOperation(
                     }
                 }
             }
-            return null
+            null
         } catch (e: NotEnoughArgumentsException) {
-            return message.respondWith(e.message!!)
+            message.respondWith(e.message!!)
+        } catch (_: TooManyArgumentsException) {
+            null
         }
     }
 
@@ -138,6 +139,23 @@ class GetFactoidOperation(val factoidService: FactoidService) : RouterOperation(
     }
 }
 
+fun renderTextAttribute(
+    selector: String,
+    attribute: FactoidAttribute,
+    arguments: List<String>
+): String {
+    // we need to see if parameters can be replaced.
+    val replacements = getPlaceholders(attribute.attributeValue!!)
+    return if (arguments.size > replacements) {
+        // we have an error condition: we haven't found a thing with replacements,
+        // but that's what the search found. This is when you have factoids like
+        // "foo bar" *and* "foo".
+        throw TooManyArgumentsException()
+    } else {
+        replaceParameters(selector, attribute.attributeValue!!, arguments)
+    }
+}
+
 fun List<FactoidAttribute>.buildAvailableAttributeList(): String {
     return this.filter { (it.attributeValue ?: "").isNotEmpty() }
         .map {
@@ -153,28 +171,34 @@ fun List<FactoidAttribute>.buildAvailableAttributeList(): String {
         .joinToStringWithAnd()
 }
 
+val placeholderRegex = "\\$(\\d+)".toRegex()
+
 private fun replaceParameters(selector: String, value: String, arguments: List<String>): String {
-    val regex = "\\$(\\d+)".toRegex()
-
-    // Find all placeholders like $1, $2, etc.
-    val placeholders = regex.findAll(value)
-
-    // Track the highest placeholder number to ensure we have enough arguments
-    val maxPlaceholder = placeholders.map { it.groupValues[1].toInt() }.maxOrNull()
+    val maxPlaceholder = getPlaceholders(value)
 
     // Check if the arguments list is large enough
-    if (maxPlaceholder != null && maxPlaceholder > arguments.size) {
+    if (maxPlaceholder > arguments.size) {
         throw NotEnoughArgumentsException(
             "$selector: Not enough arguments to replace placeholders. Expected at least $maxPlaceholder but got ${arguments.size}."
         )
     }
 
     // Replace placeholders with the corresponding argument values
-    return value.replace(regex) { matchResult ->
+    return value.replace(placeholderRegex) { matchResult ->
         val index = matchResult.groupValues[1].toInt() - 1
         if (index < arguments.size) arguments[index]
         else throw NotEnoughArgumentsException("$selector: Invalid argument index $index.")
     }
+}
+
+private fun getPlaceholders(value: String): Int {
+
+    // Find all placeholders like $1, $2, etc.
+    val placeholders = placeholderRegex.findAll(value)
+
+    // Track the highest placeholder number to ensure we have enough arguments
+    val maxPlaceholder = placeholders.map { it.groupValues[1].toInt() }.maxOrNull()
+    return maxPlaceholder ?: 0
 }
 
 fun List<FactoidAttribute>.summarize(
@@ -188,8 +212,7 @@ fun List<FactoidAttribute>.summarize(
             val attr = it.attributeType!!
             val attribute =
                 when (it.attributeType!!) {
-                    FactoidAttributeType.TEXT ->
-                        replaceParameters(selector, it.attributeValue!!, arguments)
+                    FactoidAttributeType.TEXT -> renderTextAttribute(selector, it, arguments)
                     FactoidAttributeType.SEEALSO -> renderSeeAlso(selector, factoidService, it)
                     else -> it.attributeValue
                 }

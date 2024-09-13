@@ -101,6 +101,7 @@ class GetFactoidOperationTests {
                     "~foo8 bar baz",
                     "foo is bar: baz."
                 ),
+                Arguments.of("~foo8=foo", "~foo8 baz", null),
             )
     }
 }
