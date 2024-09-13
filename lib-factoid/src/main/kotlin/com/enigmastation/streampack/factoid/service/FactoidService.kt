@@ -63,7 +63,7 @@ class FactoidService(
         factoidAttributeRepository.save(entity)
     }
 
-    fun findSelectorWithArguments(selector: String): Optional<Pair<String, List<String>>> {
+    fun findSelectorWithArguments(selector: String): Optional<Pair<String, String>> {
         val components = selector.split(" ")
         for (i in components.indices) {
             // Join the first (components.size - i) components to form the search string
@@ -74,7 +74,7 @@ class FactoidService(
             if (match.isPresent()) {
                 // If a match is found, collect the remaining components as the extras
                 val extras = components.drop(components.size - i)
-                return Optional.of(Pair(match.get().selector!!, extras.toList()))
+                return Optional.of(Pair(match.get().selector!!, extras.joinToString(" ")))
             }
         }
         // If no match is found, return null

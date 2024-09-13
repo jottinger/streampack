@@ -33,7 +33,7 @@ class GetFactoidOperation(val factoidService: FactoidService) : RouterOperation(
                     return null
                 }
                 // okay, we have a command.
-                val (selector, arguments) = (data.get())
+                val (selector, argument) = (data.get())
                 // get all attributes; we may not need them, but the common case would be yes, we
                 // do.
                 val attributes = factoidService.findBySelector(selector)
@@ -50,7 +50,7 @@ class GetFactoidOperation(val factoidService: FactoidService) : RouterOperation(
                             // okay, we need to get the available factoid attributes, ordered by
                             // type.
                             message.respondWith(
-                                attributes.summarize(selector, factoidService, arguments)
+                                attributes.summarize(selector, factoidService, argument)
                             )
                         }
                         // if the attribute is "info" - we need to tell the user what attributes are
@@ -83,7 +83,7 @@ class GetFactoidOperation(val factoidService: FactoidService) : RouterOperation(
                                 val value =
                                     when (attribute.attributeType!!) {
                                         FactoidAttributeType.TEXT -> {
-                                            renderTextAttribute(selector, attribute, arguments)
+                                            renderTextAttribute(selector, attribute, argument)
                                         }
                                         // we need to interpolate "seealso" values.
                                         FactoidAttributeType.SEEALSO ->
@@ -139,20 +139,15 @@ class GetFactoidOperation(val factoidService: FactoidService) : RouterOperation(
     }
 }
 
-fun renderTextAttribute(
-    selector: String,
-    attribute: FactoidAttribute,
-    arguments: List<String>
-): String {
+fun renderTextAttribute(selector: String, attribute: FactoidAttribute, argument: String): String {
     // we need to see if parameters can be replaced.
-    val replacements = getPlaceholders(attribute.attributeValue!!)
-    return if (arguments.size > replacements) {
+    return if (!hasPlaceholder(attribute.attributeValue!!) && !argument.isEmpty()) {
         // we have an error condition: we haven't found a thing with replacements,
         // but that's what the search found. This is when you have factoids like
         // "foo bar" *and* "foo".
         throw TooManyArgumentsException()
     } else {
-        replaceParameters(selector, attribute.attributeValue!!, arguments)
+        replaceParameters(selector, attribute.attributeValue!!, argument)
     }
 }
 
@@ -171,40 +166,26 @@ fun List<FactoidAttribute>.buildAvailableAttributeList(): String {
         .joinToStringWithAnd()
 }
 
-val placeholderRegex = "\\$(\\d+)".toRegex()
-
-private fun replaceParameters(selector: String, value: String, arguments: List<String>): String {
-    val maxPlaceholder = getPlaceholders(value)
+private fun replaceParameters(selector: String, value: String, argument: String): String {
+    val hasPlaceholder = hasPlaceholder(value)
 
     // Check if the arguments list is large enough
-    if (maxPlaceholder > arguments.size) {
-        throw NotEnoughArgumentsException(
-            "$selector: Not enough arguments to replace placeholders. Expected at least $maxPlaceholder but got ${arguments.size}."
-        )
+    if (hasPlaceholder && argument.isEmpty()) {
+        throw NotEnoughArgumentsException("$selector: Not enough arguments to replace placeholder.")
     }
 
     // Replace placeholders with the corresponding argument values
-    return value.replace(placeholderRegex) { matchResult ->
-        val index = matchResult.groupValues[1].toInt() - 1
-        if (index < arguments.size) arguments[index]
-        else throw NotEnoughArgumentsException("$selector: Invalid argument index $index.")
-    }
+    return value.replace("$1", argument)
 }
 
-private fun getPlaceholders(value: String): Int {
-
-    // Find all placeholders like $1, $2, etc.
-    val placeholders = placeholderRegex.findAll(value)
-
-    // Track the highest placeholder number to ensure we have enough arguments
-    val maxPlaceholder = placeholders.map { it.groupValues[1].toInt() }.maxOrNull()
-    return maxPlaceholder ?: 0
+private fun hasPlaceholder(value: String): Boolean {
+    return value.indexOf("$1") > -1
 }
 
 fun List<FactoidAttribute>.summarize(
     selector: String,
     factoidService: FactoidService,
-    arguments: List<String>
+    argument: String
 ): String {
     return this.sortedBy { it.attributeType?.ordinal }
         .filter { (it.attributeValue ?: "").isNotEmpty() }
@@ -212,7 +193,7 @@ fun List<FactoidAttribute>.summarize(
             val attr = it.attributeType!!
             val attribute =
                 when (it.attributeType!!) {
-                    FactoidAttributeType.TEXT -> renderTextAttribute(selector, it, arguments)
+                    FactoidAttributeType.TEXT -> renderTextAttribute(selector, it, argument)
                     FactoidAttributeType.SEEALSO -> renderSeeAlso(selector, factoidService, it)
                     else -> it.attributeValue
                 }

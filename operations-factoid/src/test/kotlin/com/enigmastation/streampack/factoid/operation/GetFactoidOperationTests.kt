@@ -83,18 +83,11 @@ class GetFactoidOperationTests {
             Stream.of(
                 Arguments.of("~foo8=foo", "~foo8", "foo8 is foo."),
                 Arguments.of("~foo8=foo $1", "~foo8 bar", "foo8 is foo bar."),
-                Arguments.of("~foo8=foo $1 $2", "~foo8 bar baz", "foo8 is foo bar baz."),
-                Arguments.of("~foo8=foo $1 $2 $2", "~foo8 bar baz", "foo8 is foo bar baz baz."),
-                Arguments.of("~foo8=foo $1 $2 $1", "~foo8 bar baz", "foo8 is foo bar baz bar."),
-                Arguments.of(
-                    "~foo8=foo $1 $2",
-                    "~foo8 bar",
-                    "foo8: Not enough arguments to replace placeholders. Expected at least 2 but got 1."
-                ),
+                Arguments.of("~foo8=foo $1", "~foo8 bar baz", "foo8 is foo bar baz."),
                 Arguments.of(
                     "~foo8=foo $1",
                     "~foo8",
-                    "foo8: Not enough arguments to replace placeholders. Expected at least 1 but got 0."
+                    "foo8: Not enough arguments to replace placeholder."
                 ),
                 Arguments.of(
                     "~foo8 bar=<reply>foo is bar: $1",
