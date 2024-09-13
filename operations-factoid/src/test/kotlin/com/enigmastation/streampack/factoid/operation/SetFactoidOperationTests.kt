@@ -3,6 +3,7 @@ package com.enigmastation.streampack.factoid.operation
 
 import com.enigmastation.streampack.factoid.model.FactoidAttributeType
 import com.enigmastation.streampack.factoid.repository.FactoidAttributeRepository
+import com.enigmastation.streampack.factoid.repository.FactoidRepository
 import com.enigmastation.streampack.whiteboard.model.routerMessage
 import java.util.stream.Stream
 import kotlin.test.Test
@@ -26,10 +27,12 @@ class SetFactoidOperationTests {
     @Autowired lateinit var getFactoidOperation: GetFactoidOperation
 
     @Autowired lateinit var factoidAttributeRepository: FactoidAttributeRepository
+    @Autowired lateinit var factoidRepository: FactoidRepository
 
     @BeforeEach
     fun clearDb() {
         factoidAttributeRepository.deleteAll()
+        factoidRepository.deleteAll()
     }
 
     @Test
@@ -62,13 +65,15 @@ class SetFactoidOperationTests {
         value: String
     ) {
         setFactoidOperation.handleMessage(routerMessage { content = input })
-        val factoid =
+        val factoidAttribute =
             factoidAttributeRepository.findBySelectorIgnoreCaseAndAttributeType(
                 selector,
                 FactoidAttributeType.valueOf(attribute.uppercase())
             )
+        assertTrue(factoidAttribute.isPresent)
+        assertEquals(value, factoidAttribute.get().attributeValue)
+        val factoid = factoidRepository.findBySelectorIgnoreCase(selector)
         assertTrue(factoid.isPresent)
-        assertEquals(value, factoid.get().attributeValue)
     }
 
     @Test
