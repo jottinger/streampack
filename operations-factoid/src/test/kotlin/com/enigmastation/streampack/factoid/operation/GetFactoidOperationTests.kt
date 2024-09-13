@@ -2,10 +2,14 @@
 package com.enigmastation.streampack.factoid.operation
 
 import com.enigmastation.streampack.whiteboard.model.routerMessage
+import java.util.stream.Stream
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -63,5 +67,35 @@ class GetFactoidOperationTests {
         assertEquals("See also: ~foo1 and ~foo2", message?.content)
         message = getFactoidOperation.handleMessage(routerMessage { content = "~foo3.seealso" })
         assertEquals("See also: ~foo1 and ~foo2", message?.content)
+    }
+
+    @ParameterizedTest
+    @MethodSource("interpolationTestData")
+    fun `20-factoid interpolation`(command: String, input: String, output: String?) {
+        setFactoidOperation.handleMessage(routerMessage { content = command })
+        val result = getFactoidOperation.handleMessage(routerMessage { content = input })
+        assertEquals(output, result?.content)
+    }
+
+    companion object {
+        @JvmStatic
+        fun interpolationTestData() =
+            Stream.of(
+                Arguments.of("~foo8=foo", "~foo8", "foo8 is foo."),
+                Arguments.of("~foo8=foo $1", "~foo8 bar", "foo8 is foo bar."),
+                Arguments.of("~foo8=foo $1 $2", "~foo8 bar baz", "foo8 is foo bar baz."),
+                Arguments.of("~foo8=foo $1 $2 $2", "~foo8 bar baz", "foo8 is foo bar baz baz."),
+                Arguments.of("~foo8=foo $1 $2 $1", "~foo8 bar baz", "foo8 is foo bar baz bar."),
+                Arguments.of(
+                    "~foo8=foo $1 $2",
+                    "~foo8 bar",
+                    "foo8: Not enough arguments to replace placeholders. Expected at least 2 but got 1."
+                ),
+                Arguments.of(
+                    "~foo8=foo $1",
+                    "~foo8",
+                    "foo8: Not enough arguments to replace placeholders. Expected at least 1 but got 0."
+                ),
+            )
     }
 }

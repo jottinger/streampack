@@ -45,7 +45,6 @@ class FactoidService(
         val factoid = factoidRepository.findBySelectorIgnoreCase(entity.selector!!)
         when (factoid.isPresent) {
             true -> {
-
                 if (factoid.get().locked == true) {
                     throw FactoidLockedException(entity.selector!!)
                 }
@@ -62,6 +61,24 @@ class FactoidService(
             }
         }
         factoidAttributeRepository.save(entity)
+    }
+
+    fun findSelectorWithArguments(selector: String): Optional<Pair<String, List<String>>> {
+        val components = selector.split(" ")
+        for (i in components.indices) {
+            // Join the first (components.size - i) components to form the search string
+            val searchSelector = components.take(components.size - i).joinToString(" ")
+
+            // Attempt to find a match with the current selector
+            val match = factoidRepository.findBySelectorIgnoreCase(searchSelector)
+            if (match.isPresent()) {
+                // If a match is found, collect the remaining components as the extras
+                val extras = components.drop(components.size - i)
+                return Optional.of(Pair(match.get().selector!!, extras.toList()))
+            }
+        }
+        // If no match is found, return null
+        return Optional.empty()
     }
 
     @Transactional
