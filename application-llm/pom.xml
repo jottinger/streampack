@@ -55,6 +55,11 @@
         </dependency>
         <dependency>
             <groupId>com.enigmastation.streampack</groupId>
+            <artifactId>operations-specs</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.enigmastation.streampack</groupId>
             <artifactId>operations-calculator</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
