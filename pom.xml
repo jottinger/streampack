@@ -24,6 +24,7 @@
         <module>service-irc</module>
         <module>service-discord</module>
         <module>service-artemis</module>
+        <module>service-slack</module>
         <module>operations-factoid</module>
         <module>operations-calculator</module>
         <module>operations-karma</module>
