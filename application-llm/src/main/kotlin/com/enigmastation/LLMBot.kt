@@ -8,10 +8,12 @@ import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.EnableAspectJAutoProxy
 import org.springframework.context.support.ApplicationObjectSupport
 import org.springframework.http.client.ClientHttpRequestFactory
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.scheduling.annotation.EnableScheduling
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.invoke
@@ -21,6 +23,7 @@ import org.springframework.web.client.RestTemplate
 @SpringBootApplication
 @EnableScheduling
 @EnableWebSecurity
+@EnableMethodSecurity
 class LLMBot : CommandLineRunner, ApplicationObjectSupport() {
     @Bean fun restTemplate(): RestTemplate = RestTemplate()
 

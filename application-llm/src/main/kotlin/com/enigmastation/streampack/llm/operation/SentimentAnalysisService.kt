@@ -57,10 +57,10 @@ class SentimentAnalysisService(
             scope = message.scope
         }
 
-        val user = userService.findByCloak(message.cloak!!)
+        val user = userService.findByCloak("IrcService", message.cloak!!)
         // no user? move on. if they're not an admin? Again, move along.
         // sentiment analysis is easy to abuse.
-        if (user.isPresent && user.get().hasRole("admin")) {
+        if ( user.hasRole("ADMIN")) {
             // okay, so now we have... a person or a channel.
             val messages =
                 if (reference.startsWith("#")) {

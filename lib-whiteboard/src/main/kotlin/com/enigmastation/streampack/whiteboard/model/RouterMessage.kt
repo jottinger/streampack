@@ -2,6 +2,8 @@
 package com.enigmastation.streampack.whiteboard.model
 
 import com.enigmastation.streampack.extensions.compress
+import com.enigmastation.streampack.security.entity.RouterUser
+import org.springframework.security.core.userdetails.UserDetails
 import java.time.OffsetDateTime
 
 data class RouterMessage(
@@ -19,6 +21,7 @@ data class RouterMessage(
     // IRC cloak, if any; internal analogue for UserPrincipal
     val cloak: String? = null,
     val timestamp: OffsetDateTime = OffsetDateTime.now(),
+    val user: RouterUser? = null
 ) {
     /** Inverts the message's target and changes the content */
     fun respondWith(content: String): RouterMessage {

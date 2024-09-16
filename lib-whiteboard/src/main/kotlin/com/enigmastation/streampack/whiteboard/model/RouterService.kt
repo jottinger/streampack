@@ -37,7 +37,7 @@ abstract class RouterService(name: String? = null) : NamedService(name) {
      * future consumers of the service' message.
      */
     final override fun receive(message: RouterMessage): RouterMessage? {
-        logger.info("Service {} received message response {}", name, message)
+        logger.debug("Service {} received message response {}", name, message)
         this.handleMessage(message)
         return null
     }

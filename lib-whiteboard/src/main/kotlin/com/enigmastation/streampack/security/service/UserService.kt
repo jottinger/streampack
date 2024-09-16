@@ -3,6 +3,9 @@ package com.enigmastation.streampack.security.service
 
 import com.enigmastation.streampack.security.entity.RouterUser
 import com.enigmastation.streampack.security.repository.UserRepository
+import org.springframework.security.authentication.AnonymousAuthenticationToken
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.context.SecurityContextHolder
 import java.util.Optional
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
@@ -15,8 +18,21 @@ class UserService(val repository: UserRepository) : UserDetailsManager {
     val users: User.UserBuilder = User.withDefaultPasswordEncoder()
 
     @Transactional
-    fun findByCloak(cloak: String): Optional<RouterUser> {
-        return repository.findByCloakIgnoreCase(cloak)
+    fun findByCloak(service: String, cloak: String): RouterUser {
+        val user = repository.findByCloakIgnoreCase(cloak)
+            .orElse(RouterUser(cloak = cloak, roles = "USER", enabled = false))
+        val auth = AnonymousAuthenticationToken(service, user, user.authorities);
+        SecurityContextHolder.getContext().authentication = auth;
+        return user
+    }
+
+    @Deprecated(
+        message = "Use the findByCloak that identifies the calling service",
+        replaceWith = ReplaceWith("findByCloak(serviceName, cloak)")
+    )
+    @Transactional
+    fun findByCloak(cloak: String): RouterUser {
+        return findByCloak("Unknown", cloak)
     }
 
     @Transactional
@@ -32,7 +48,9 @@ class UserService(val repository: UserRepository) : UserDetailsManager {
         )
     }
 
-    @Transactional override fun updateUser(user: UserDetails?) {}
+    @Transactional
+    override fun updateUser(user: UserDetails?) {
+    }
 
     @Transactional
     override fun deleteUser(username: String?) {

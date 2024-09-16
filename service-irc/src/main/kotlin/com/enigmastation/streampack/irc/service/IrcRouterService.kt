@@ -29,17 +29,23 @@ import org.kitteh.irc.client.library.util.StsUtil
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Service
 
 @Service
-class IrcRouterService() : RouterService(), InitializingBean {
-    @Autowired lateinit var ircServiceConfiguration: IrcServiceConfiguration
+open class IrcRouterService() : RouterService(), InitializingBean {
+    @Autowired
+    lateinit var ircServiceConfiguration: IrcServiceConfiguration
 
     lateinit var internalRouter: Router
 
-    @Autowired lateinit var channelService: ChannelService
+    @Autowired
+    lateinit var channelService: ChannelService
 
-    @Autowired lateinit var userService: UserService
+    @Autowired
+    lateinit var userService: UserService
 
     val inputLogger = LoggerFactory.getLogger("com.enigmastation.streampack.irc.service.input")
     val outputLogger = LoggerFactory.getLogger("com.enigmastation.streampack.irc.service.output")
@@ -47,19 +53,19 @@ class IrcRouterService() : RouterService(), InitializingBean {
         LoggerFactory.getLogger("com.enigmastation.streampack.irc.service.exception")
     lateinit var client: Client
 
-    fun connect() {
+    open fun connect() {
         client.connect()
     }
 
-    fun join(channel: String) {
+    open fun join(channel: String) {
         client.addChannel(channel)
     }
 
-    fun leave(channel: String) {
+    open fun leave(channel: String) {
         client.getChannel(channel).ifPresent { it.part() }
     }
 
-    override fun afterPropertiesSet() {
+    open override fun afterPropertiesSet() {
         client =
             Client.builder()
                 .nick(ircServiceConfiguration.nick)
@@ -94,12 +100,12 @@ class IrcRouterService() : RouterService(), InitializingBean {
             )
     }
 
-    override fun canHandle(message: RouterMessage): Boolean {
+    open override fun canHandle(message: RouterMessage): Boolean {
         logger.debug("canHandle message: {}", message)
         return message.messageSource == MessageSource.IRC
     }
 
-    override fun handleMessage(message: RouterMessage) {
+    open override fun handleMessage(message: RouterMessage) {
         if (message.content.isNotBlank()) {
             val destination: String = message.context ?: message.target ?: return
             // okay, we have a destination. if it's a channel, we need to see if it's muted.
@@ -124,7 +130,7 @@ class IrcRouterService() : RouterService(), InitializingBean {
         }
     }
 
-    override fun handleCommand(message: RouterMessage) {
+    open override fun handleCommand(message: RouterMessage) {
         when (message.content) {
             ".init." -> connect()
             else -> {}
@@ -133,7 +139,7 @@ class IrcRouterService() : RouterService(), InitializingBean {
 
     @Suppress("unused")
     @Handler
-    fun onChannelAction(event: ChannelCtcpEvent) {
+    open fun onChannelAction(event: ChannelCtcpEvent) {
         logger.debug("channel notice: {}", event)
         if (event.message.startsWith("ACTION")) {
             channelService.logEvent(
@@ -149,7 +155,7 @@ class IrcRouterService() : RouterService(), InitializingBean {
 
     @Suppress("unused")
     @Handler
-    fun onConnected(event: ClientNegotiationCompleteEvent) {
+    open fun onConnected(event: ClientNegotiationCompleteEvent) {
         logger.info("Connected!")
         /*
          * okay, we need to build a list of channels to join.
@@ -201,7 +207,7 @@ class IrcRouterService() : RouterService(), InitializingBean {
 
     @Suppress("unused")
     @Handler
-    fun onChannelMessage(event: ChannelMessageEvent) {
+    open fun onChannelMessage(event: ChannelMessageEvent) {
         // not a private message, let's log it.
         channelService.logEvent(
             nick = event.actor.nick,
@@ -213,6 +219,8 @@ class IrcRouterService() : RouterService(), InitializingBean {
         )
         // don't dispatch anything if *we* posted it!
         if (event.actor.nick != ircServiceConfiguration.nick) {
+            // need to look up the user.
+            val userData = userService.findByCloak(this.name, event.actor.host)
             dispatch(
                 routerMessage {
                     content = event.message
@@ -222,6 +230,7 @@ class IrcRouterService() : RouterService(), InitializingBean {
                     source = event.actor.nick
                     context = event.channel.name
                     cloak = event.actor.host
+                    user = userData
                 }
             )
         }
@@ -229,7 +238,7 @@ class IrcRouterService() : RouterService(), InitializingBean {
 
     @Suppress("unused")
     @Handler
-    fun onChannelJoinedEvent(event: RequestedChannelJoinCompleteEvent) {
+    open fun onChannelJoinedEvent(event: RequestedChannelJoinCompleteEvent) {
         channelService.update(
             MessageSource.IRC,
             ircServiceConfiguration.host,
@@ -248,7 +257,7 @@ class IrcRouterService() : RouterService(), InitializingBean {
 
     @Suppress("unused")
     @Handler
-    fun onChannelTopicChangeEvent(event: ChannelTopicEvent) {
+    open fun onChannelTopicChangeEvent(event: ChannelTopicEvent) {
         channelService.update(
             MessageSource.IRC,
             ircServiceConfiguration.host,
@@ -278,28 +287,9 @@ class IrcRouterService() : RouterService(), InitializingBean {
         )
     }
 
-    // this is a mechanism that will look for a user auth and apply it to ONE OPERATION
-    fun withAuthentication(cloak: String, requiredRole: String, function: () -> Unit) {
-        val user = userService.findByCloak(cloak)
-        if (user.isPresent) {
-            val u = user.get()
-            if (u.hasRole(requiredRole)) {
-                // eventually we'll have something to call here
-                logger.info("role requirement of $requiredRole passed for user ${u.username}")
-                function()
-            } else {
-                logger.info(
-                    "role requirement of $requiredRole failed for user ${u.username}: has ${u.roles}"
-                )
-            }
-        } else {
-            logger.info("No user found for cloak {}", cloak)
-        }
-    }
-
     @Suppress("unused")
     @Handler
-    fun onPrivateMessage(event: PrivateMessageEvent) {
+    open fun onPrivateMessage(event: PrivateMessageEvent) {
         logger.debug("private message received: {}", event)
 
         channelService.logEvent(
@@ -312,22 +302,32 @@ class IrcRouterService() : RouterService(), InitializingBean {
         )
         // don't dispatch anything if *we* posted it! even if it's a privmsg!
         if (event.actor.nick != ircServiceConfiguration.nick) {
+            val userData = userService.findByCloak(this.name, event.actor.host)
             val message = routerMessage {
                 content = event.message
                 messageSource = MessageSource.IRC
                 scope = MessageScope.PRIVATE
                 source = event.actor.nick
                 cloak = event.actor.host
+                user = userData
             }
-            // we need to look for "join" and "leave" commands. hmm.
-            // event.actor.host is the hostname: it's a cloak.
-            withAuthentication(event.actor.host, "ADMIN") { internalRouter.dispatch(message) }
+            message.user?.let { user ->
+                //if (user.hasRole("ADMIN")) {
+                dispatchInternal(message)
+                //internalRouter.dispatch(message)
+                // }
+            }
 
             dispatch(message)
         }
     }
 
-    fun mute(channelName: String, muteStatus: Boolean) {
+    @PreAuthorize("hasRole('ADMIN')")
+    open fun dispatchInternal(message: RouterMessage) {
+        internalRouter.dispatch(message)
+    }
+
+    open fun mute(channelName: String, muteStatus: Boolean) {
         logger.debug("muting {} with {}", channelName, muteStatus)
         channelService.mute(
             MessageSource.IRC,
@@ -337,7 +337,7 @@ class IrcRouterService() : RouterService(), InitializingBean {
         )
     }
 
-    fun autojoin(channelName: String, autoJoinStatus: Boolean) {
+    open fun autojoin(channelName: String, autoJoinStatus: Boolean) {
         logger.debug("setting autojoin in {} with {}", channelName, autoJoinStatus)
         channelService.autojoin(
             MessageSource.IRC,
@@ -347,7 +347,7 @@ class IrcRouterService() : RouterService(), InitializingBean {
         )
     }
 
-    fun visible(channelName: String, visible: Boolean) {
+    open fun visible(channelName: String, visible: Boolean) {
         logger.debug("setting visible in {} with {}", channelName, visible)
         channelService.visible(
             MessageSource.IRC,
@@ -357,7 +357,7 @@ class IrcRouterService() : RouterService(), InitializingBean {
         )
     }
 
-    fun logged(channelName: String, logged: Boolean) {
+    open fun logged(channelName: String, logged: Boolean) {
         logger.debug("setting logged in {} with {}", channelName, logged)
         channelService.logged(MessageSource.IRC, ircServiceConfiguration.host, channelName, logged)
     }
