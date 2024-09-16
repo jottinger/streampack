@@ -30,22 +30,17 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Service
 
 @Service
 open class IrcRouterService() : RouterService(), InitializingBean {
-    @Autowired
-    lateinit var ircServiceConfiguration: IrcServiceConfiguration
+    @Autowired lateinit var ircServiceConfiguration: IrcServiceConfiguration
 
     lateinit var internalRouter: Router
 
-    @Autowired
-    lateinit var channelService: ChannelService
+    @Autowired lateinit var channelService: ChannelService
 
-    @Autowired
-    lateinit var userService: UserService
+    @Autowired lateinit var userService: UserService
 
     val inputLogger = LoggerFactory.getLogger("com.enigmastation.streampack.irc.service.input")
     val outputLogger = LoggerFactory.getLogger("com.enigmastation.streampack.irc.service.output")
@@ -312,9 +307,9 @@ open class IrcRouterService() : RouterService(), InitializingBean {
                 user = userData
             }
             message.user?.let { user ->
-                //if (user.hasRole("ADMIN")) {
+                // if (user.hasRole("ADMIN")) {
                 dispatchInternal(message)
-                //internalRouter.dispatch(message)
+                // internalRouter.dispatch(message)
                 // }
             }
 

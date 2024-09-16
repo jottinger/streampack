@@ -10,7 +10,7 @@ abstract class NamedService(name: String? = null, timeout: Duration? = null) {
     val logger = LoggerFactory.getLogger(this::class.java)
     var name: String = name ?: ""
         get() {
-            return if ((field?:"").isEmpty()) {
+            return if ((field ?: "").isEmpty()) {
                 field = this::class.simpleName ?: "UnnamedService"
                 field
             } else {

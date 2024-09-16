@@ -3,7 +3,6 @@ package com.enigmastation.streampack.whiteboard.model
 
 import com.enigmastation.streampack.extensions.compress
 import com.enigmastation.streampack.security.entity.RouterUser
-import org.springframework.security.core.userdetails.UserDetails
 import java.time.OffsetDateTime
 
 data class RouterMessage(

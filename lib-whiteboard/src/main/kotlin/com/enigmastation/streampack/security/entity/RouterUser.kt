@@ -10,20 +10,20 @@ import jakarta.persistence.Index
 import jakarta.persistence.PrePersist
 import jakarta.persistence.PreUpdate
 import jakarta.persistence.Table
+import java.time.OffsetDateTime
+import java.util.UUID
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
-import java.time.OffsetDateTime
-import java.util.UUID
 
 @Entity
 @Table(
     name = "users",
     indexes =
-    [
-        Index("username", columnList = "username", unique = true),
-        Index("cloak", columnList = "cloak", unique = false)
-    ]
+        [
+            Index("username", columnList = "username", unique = true),
+            Index("cloak", columnList = "cloak", unique = false)
+        ]
 )
 class RouterUser(
     @Id @GeneratedValue(strategy = GenerationType.UUID) var id: UUID? = null,
@@ -68,10 +68,10 @@ class RouterUser(
     }
 
     override fun getPassword(): String {
-        return password?:""
+        return password ?: ""
     }
 
     override fun getUsername(): String? {
-        return username?:""
+        return username ?: ""
     }
 }
