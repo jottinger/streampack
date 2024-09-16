@@ -1,6 +1,8 @@
 /* Joseph B. Ottinger (C)2024 */
 package com.enigmastation.streampack.whiteboard.model
 
+import com.enigmastation.streampack.security.entity.RouterUser
+
 class RouterMessageBuilder {
     var content: String = ""
     var target: String? = null
@@ -12,6 +14,7 @@ class RouterMessageBuilder {
     var process: Boolean = true
     var cloak: String? = null
     var messageSource: MessageSource = MessageSource.UNKNOWN
+    var user: RouterUser? = null
 
     fun build(): RouterMessage =
         RouterMessage(
@@ -24,7 +27,8 @@ class RouterMessageBuilder {
             scope,
             messageSource,
             process,
-            cloak
+            cloak,
+            user = user
         )
 }
 
