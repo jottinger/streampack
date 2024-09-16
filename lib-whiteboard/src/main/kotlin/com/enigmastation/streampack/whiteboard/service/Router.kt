@@ -14,6 +14,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.InitializingBean
 import org.springframework.stereotype.Service
 
 @Service
@@ -21,7 +22,7 @@ class Router(
     val services: List<RouterService>,
     val routerOperations: List<RouterOperation>,
     val routerTransformers: List<RouterTransformer>
-) {
+): InitializingBean {
     val logger = LoggerFactory.getLogger(this::class.java)
 
     val executorService = Executors.newVirtualThreadPerTaskExecutor()
@@ -176,8 +177,7 @@ class Router(
         return response
     }
 
-    init {
-        // for each service, we need to make sure it knows about this router
+    override fun afterPropertiesSet() {
         services
             // TODO under what conditions would we not want a service to be dispatched to? Any at
             // all?
@@ -189,4 +189,18 @@ class Router(
         routerOperations.forEach { logger.info("Registered service: {}", it.name) }
         routerTransformers.forEach { logger.info("Registered transformer: {}", it.name) }
     }
+
+//    init {
+//        // for each service, we need to make sure it knows about this router
+//        services
+//            // TODO under what conditions would we not want a service to be dispatched to? Any at
+//            // all?
+//            .filter { true }
+//            .forEach { service ->
+//                logger.debug("Adding router to service {}", service.name)
+//                service.addRouter(this)
+//            }
+//        routerOperations.forEach { logger.info("Registered service: {}", it.name) }
+//        routerTransformers.forEach { logger.info("Registered transformer: {}", it.name) }
+//    }
 }

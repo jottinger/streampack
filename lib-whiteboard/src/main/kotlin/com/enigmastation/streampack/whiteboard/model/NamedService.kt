@@ -7,7 +7,7 @@ import kotlin.text.isEmpty
 import org.slf4j.LoggerFactory
 
 abstract class NamedService(name: String? = null, timeout: Duration? = null) {
-    val logger = LoggerFactory.getLogger(this::class.java)
+    var logger = LoggerFactory.getLogger(this::class.java)
     var name: String = name ?: ""
         get() {
             return if ((field ?: "").isEmpty()) {

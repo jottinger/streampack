@@ -17,6 +17,7 @@ abstract class RouterService(name: String? = null) : NamedService(name) {
     }
 
     fun addRouter(router: Router) {
+        println(this.name)
         logger.debug("Adding router {}", router)
         routers += router
     }
