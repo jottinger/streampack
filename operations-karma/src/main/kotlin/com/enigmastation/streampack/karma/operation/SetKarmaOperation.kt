@@ -2,25 +2,24 @@
 package com.enigmastation.streampack.karma.operation
 
 import com.enigmastation.streampack.extensions.compress
+import com.enigmastation.streampack.karma.service.KarmaConfiguration
 import com.enigmastation.streampack.karma.service.KarmaEntryService
 import com.enigmastation.streampack.whiteboard.model.RouterMessage
 import com.enigmastation.streampack.whiteboard.model.RouterOperation
 import java.util.regex.Pattern
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Service
 
-@ConfigurationProperties("streampack.karma")
 @Service
 class SetKarmaOperation() : RouterOperation(priority = 20), KarmaOperation {
     @Autowired lateinit var karmaEntryService: KarmaEntryService
-    var commentsEnabled = true
+    @Autowired lateinit var karmaConfiguration: KarmaConfiguration
 
     override fun canHandle(message: RouterMessage): Boolean {
         val translatedContent = message.content.fixArrows()
         val matches = operationPattern.matcher(translatedContent)
         return if (matches.find()) {
-            !(commentsEnabled == false && matches.group(3).trim().isNotEmpty())
+            !(karmaConfiguration.commentsEnabled == false && matches.group(3).trim().isNotEmpty())
         } else {
             false
         }
@@ -35,14 +34,18 @@ class SetKarmaOperation() : RouterOperation(priority = 20), KarmaOperation {
         if (matches.find()) {
             val selector = matches.group(1).removeSuffix(" ").removeSuffix(":").trim()
             val value = operationValues[matches.group(2)] ?: return null
+            var comment = matches.group(3)
+            if (comment.isNotEmpty()) {
+                comment = comment.compress()
+            }
 
             // just trust me on this one.
             if (selector.isEmpty() || selector.hashCode() == -1215158239) {
                 return null
             }
             var selfKarma = message.source.equals(selector, true)
-            return if (selfKarma) {
-                val karma = karmaEntryService.addEntry(selector, -1)
+            return if (selfKarma && !karmaConfiguration.selfKarmaAllowed) {
+                val karma = karmaEntryService.addEntry(selector, -1, comment)
                 val prefix =
                     if (value > 0) {
                         "You can't increment your own karma! "
@@ -51,7 +54,7 @@ class SetKarmaOperation() : RouterOperation(priority = 20), KarmaOperation {
                     }
                 message.respondWith("${prefix}Your karma is now $karma.")
             } else {
-                val karma = karmaEntryService.addEntry(selector, value)
+                val karma = karmaEntryService.addEntry(selector, value, comment)
                 if (karma == 0) {
                     message.respondWith("$selector has neutral karma.")
                 } else {
@@ -68,7 +71,7 @@ class SetKarmaOperation() : RouterOperation(priority = 20), KarmaOperation {
 
     companion object {
         private val operationPattern =
-            Pattern.compile("^(?<nick>.+)(?<service>\\+{2}|--)(.*)\$", Pattern.COMMENTS)
+            Pattern.compile("^(?<nick>.+)(?<service>\\+{2}|--)(?<comment>.*)\$", Pattern.COMMENTS)
         private val operationValues = mapOf("--" to -1, "++" to 1)
     }
 }

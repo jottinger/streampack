@@ -3,4 +3,4 @@ package com.enigmastation.streampack
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 
-@SpringBootApplication class KarmaConfiguration {}
+@SpringBootApplication class KarmaTestConfiguration {}

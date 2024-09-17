@@ -1,6 +1,7 @@
 /* Joseph B. Ottinger (C)2024 */
 package com.enigmastation.streampack.karma.operation
 
+import com.enigmastation.streampack.karma.service.KarmaConfiguration
 import com.enigmastation.streampack.karma.service.KarmaEntryService
 import com.enigmastation.streampack.whiteboard.model.routerMessage
 import kotlin.test.BeforeTest
@@ -18,9 +19,11 @@ class KarmaOperationWithoutCommentTests {
 
     @BeforeTest
     fun setupKarmaOperation() {
+        val config = KarmaConfiguration()
         setKarmaOperation = SetKarmaOperation()
         setKarmaOperation.karmaEntryService = karmaEntryService
-        setKarmaOperation.commentsEnabled = false
+        setKarmaOperation.karmaConfiguration = config
+        setKarmaOperation.karmaConfiguration.commentsEnabled = false
     }
 
     @Test
@@ -37,7 +40,7 @@ class KarmaOperationWithoutCommentTests {
         // if comments are disabled, "~foo -- well, this is odd" -- should return false from
         // canHandle().
         // we're enabling them, so it should return "true."
-        setKarmaOperation.commentsEnabled = true
+        setKarmaOperation.karmaConfiguration.commentsEnabled = true
         assertTrue(
             setKarmaOperation.canHandle(routerMessage { content = "~foo -- well, this is odd" })
         )

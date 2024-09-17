@@ -30,7 +30,7 @@ class KarmaOperationTests {
     @BeforeTest
     fun `clear all`() {
         karmaEntryRepository.deleteAll()
-        setKarmaOperation.commentsEnabled = true
+        setKarmaOperation.karmaConfiguration.commentsEnabled = true
     }
 
     fun verify(message: RouterMessage?, substring: String) {

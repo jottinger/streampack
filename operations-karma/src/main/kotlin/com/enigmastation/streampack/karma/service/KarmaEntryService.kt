@@ -12,8 +12,10 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class KarmaEntryService(val karmaEntryRepository: KarmaEntryRepository) {
     @Transactional
-    fun addEntry(selector: String, value: Int): Int {
-        karmaEntryRepository.save(KarmaEntry(selector = selector.lowercase(), increment = value))
+    fun addEntry(selector: String, value: Int, comment: String?): Int {
+        karmaEntryRepository.save(
+            KarmaEntry(selector = selector.lowercase(), increment = value, comment = comment)
+        )
         return getKarma(selector)
     }
 
