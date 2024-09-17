@@ -45,7 +45,8 @@ class SetKarmaOperation() : RouterOperation(priority = 20), KarmaOperation {
             }
             var selfKarma = message.source.equals(selector, true)
             return if (selfKarma && !karmaConfiguration.selfKarmaAllowed) {
-                val karma = karmaEntryService.addEntry(selector, -1, comment)
+                val karmaSummary = karmaEntryService.addEntry(selector, -1, comment)
+                val karma = karmaSummary.karma.toInt()
                 val prefix =
                     if (value > 0) {
                         "You can't increment your own karma! "
@@ -54,7 +55,10 @@ class SetKarmaOperation() : RouterOperation(priority = 20), KarmaOperation {
                     }
                 message.respondWith("${prefix}Your karma is now $karma.")
             } else {
-                val karma = karmaEntryService.addEntry(selector, value, comment)
+                //                val karma = karmaEntryService.addEntry(selector, value, comment)
+                val karmaSummary = karmaEntryService.addEntry(selector, value, comment)
+                val karma = karmaSummary.karma.toInt()
+
                 if (karma == 0) {
                     message.respondWith("$selector has neutral karma.")
                 } else {

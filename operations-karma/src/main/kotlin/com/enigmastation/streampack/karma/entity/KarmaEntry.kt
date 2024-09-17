@@ -36,4 +36,8 @@ class KarmaEntry(
             createTimestamp = OffsetDateTime.now()
         }
     }
+
+    override fun toString(): String {
+        return "KarmaEntry[id='$id',selector='$selector',increment=$increment,createTimestamp=$createTimestamp,comment=$comment]"
+    }
 }

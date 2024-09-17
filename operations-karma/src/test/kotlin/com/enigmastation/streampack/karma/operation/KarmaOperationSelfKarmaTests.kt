@@ -56,4 +56,26 @@ class KarmaOperationSelfKarmaTests {
             )
         assertEquals("foo now has karma of 1.", result?.content)
     }
+
+    @Test
+    fun `26-test that karma comments are recorded`() {
+        setKarmaOperation.karmaConfiguration.selfKarmaAllowed = false
+        setKarmaOperation.karmaConfiguration.commentsEnabled = true
+        setKarmaOperation.handleMessage(
+            routerMessage {
+                source = "foo"
+                content = "~foo ++ I'm the best"
+            }
+        )
+        setKarmaOperation.handleMessage(
+            routerMessage {
+                source = "bar"
+                content = "~foo ++ you're the worst"
+            }
+        )
+        // okay, we should be able to get the most recent comments for "foo", in LIFO order.
+        val summary = karmaEntryService.getKarma("foo")
+        assertEquals(2, summary.comments.size)
+        assertEquals("you're the worst", summary.comments.first())
+    }
 }

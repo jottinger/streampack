@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository
 interface KarmaEntryRepository : JpaRepository<KarmaEntry, UUID> {
     fun findKarmaEntryByCreateTimestampBefore(creationDate: OffsetDateTime): List<KarmaEntry>
 
-    fun findKarmaEntryBySelector(name: String): List<KarmaEntry>
+    fun findKarmaEntryBySelectorOrderByCreateTimestampDesc(name: String): List<KarmaEntry>
 
     fun findTop1BySelector(selector: String): List<KarmaEntry>
 }
