@@ -57,35 +57,36 @@ class SentimentAnalysisService(
             scope = message.scope
         }
 
-        val user = userService.findByCloak(message.cloak!!)
+        val user = message.user
         // no user? move on. if they're not an admin? Again, move along.
         // sentiment analysis is easy to abuse.
-        if (user.isPresent && user.get().hasRole("admin")) {
-            // okay, so now we have... a person or a channel.
-            val messages =
-                if (reference.startsWith("#")) {
-                    channelService.findByChannel(reference)
-                } else {
-                    channelService.findByNick(reference)
-                }
-            if (messages.isEmpty()) {
-                return
-            }
-            val translatedEvents =
-                messages
-                    .reversed()
-                    .mapNotNull {
-                        val nick = it.nick
-                        val content = it.message
-                        when (it.eventType) {
-                            LogEventType.ACTION -> "$nick $content"
-                            LogEventType.MESSAGE -> "$nick: $content"
-                            else -> null
-                        }
+        user?.let { user ->
+            if (user.hasRole("ADMIN")) {
+                // okay, so now we have... a person or a channel.
+                val messages =
+                    if (reference.startsWith("#")) {
+                        channelService.findByChannel(reference)
+                    } else {
+                        channelService.findByNick(reference)
                     }
-                    .joinToString("\n")
-            val query =
-                """
+                if (messages.isEmpty()) {
+                    return
+                }
+                val translatedEvents =
+                    messages
+                        .reversed()
+                        .mapNotNull {
+                            val nick = it.nick
+                            val content = it.message
+                            when (it.eventType) {
+                                LogEventType.ACTION -> "$nick $content"
+                                LogEventType.MESSAGE -> "$nick: $content"
+                                else -> null
+                            }
+                        }
+                        .joinToString("\n")
+                val query =
+                    """
             Describe the overall sentiment of the following interactions. The conversation is represented by a speaker,
             who can either speak ("foo: bar" means "foo" says "bar") or act 
             ("foo jumps" means "foo is undertaking an act of jumping").
@@ -102,16 +103,19 @@ class SentimentAnalysisService(
             $translatedEvents
             ```
         """
-                    .trimIndent()
-            val response = ollamaChatModel.call(query)
-            logger.info("response: $response")
-            response
-                .compress()
-                .split("\n")
-                .filter { it.isNotEmpty() }
-                .forEach {
-                    dispatch(message.respondWith(it).copy(scope = scope, context = outgoingContext))
-                }
+                        .trimIndent()
+                val response = ollamaChatModel.call(query)
+                logger.info("response: $response")
+                response
+                    .compress()
+                    .split("\n")
+                    .filter { it.isNotEmpty() }
+                    .forEach {
+                        dispatch(
+                            message.respondWith(it).copy(scope = scope, context = outgoingContext)
+                        )
+                    }
+            }
         }
     }
 }

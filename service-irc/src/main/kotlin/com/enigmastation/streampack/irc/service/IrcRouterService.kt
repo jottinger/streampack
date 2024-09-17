@@ -213,6 +213,7 @@ class IrcRouterService() : RouterService(), InitializingBean {
         )
         // don't dispatch anything if *we* posted it!
         if (event.actor.nick != ircServiceConfiguration.nick) {
+            val userInstance = userService.findByCloak("IrcService", event.actor.host)
             dispatch(
                 routerMessage {
                     content = event.message
@@ -222,6 +223,7 @@ class IrcRouterService() : RouterService(), InitializingBean {
                     source = event.actor.nick
                     context = event.channel.name
                     cloak = event.actor.host
+                    user = userInstance
                 }
             )
         }
@@ -278,25 +280,6 @@ class IrcRouterService() : RouterService(), InitializingBean {
         )
     }
 
-    // this is a mechanism that will look for a user auth and apply it to ONE OPERATION
-    fun withAuthentication(cloak: String, requiredRole: String, function: () -> Unit) {
-        val user = userService.findByCloak(cloak)
-        if (user.isPresent) {
-            val u = user.get()
-            if (u.hasRole(requiredRole)) {
-                // eventually we'll have something to call here
-                logger.info("role requirement of $requiredRole passed for user ${u.username}")
-                function()
-            } else {
-                logger.info(
-                    "role requirement of $requiredRole failed for user ${u.username}: has ${u.roles}"
-                )
-            }
-        } else {
-            logger.info("No user found for cloak {}", cloak)
-        }
-    }
-
     @Suppress("unused")
     @Handler
     fun onPrivateMessage(event: PrivateMessageEvent) {
@@ -310,6 +293,7 @@ class IrcRouterService() : RouterService(), InitializingBean {
             ircServiceConfiguration.host,
             LogEventType.PRIVMSG
         )
+        val userInstance = userService.findByCloak("IrcService", event.actor.host)
         // don't dispatch anything if *we* posted it! even if it's a privmsg!
         if (event.actor.nick != ircServiceConfiguration.nick) {
             val message = routerMessage {
@@ -318,10 +302,13 @@ class IrcRouterService() : RouterService(), InitializingBean {
                 scope = MessageScope.PRIVATE
                 source = event.actor.nick
                 cloak = event.actor.host
+                user = userInstance
             }
             // we need to look for "join" and "leave" commands. hmm.
             // event.actor.host is the hostname: it's a cloak.
-            withAuthentication(event.actor.host, "ADMIN") { internalRouter.dispatch(message) }
+            if (userInstance.hasRole("ADMIN")) {
+                internalRouter.dispatch(message)
+            }
 
             dispatch(message)
         }

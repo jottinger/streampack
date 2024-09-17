@@ -3,7 +3,8 @@ package com.enigmastation.streampack.security.service
 
 import com.enigmastation.streampack.security.entity.RouterUser
 import com.enigmastation.streampack.security.repository.UserRepository
-import java.util.Optional
+import org.springframework.security.authentication.AnonymousAuthenticationToken
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.provisioning.UserDetailsManager
@@ -15,8 +16,11 @@ class UserService(val repository: UserRepository) : UserDetailsManager {
     val users: User.UserBuilder = User.withDefaultPasswordEncoder()
 
     @Transactional
-    fun findByCloak(cloak: String): Optional<RouterUser> {
-        return repository.findByCloakIgnoreCase(cloak)
+    fun findByCloak(service: String, cloak: String): RouterUser {
+        val user = repository.findByCloakIgnoreCase(cloak).orElseGet { RouterUser(cloak = cloak) }
+        SecurityContextHolder.getContext().authentication =
+            AnonymousAuthenticationToken(service, user, user.authorities)
+        return user
     }
 
     @Transactional
