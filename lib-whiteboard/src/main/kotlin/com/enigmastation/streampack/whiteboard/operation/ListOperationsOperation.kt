@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service
 
 @Service
 class ListOperationsOperation(val context: ApplicationContext) : RouterOperation() {
-    val parser = ListOperationGrammar.parser()
 
     override fun canHandle(message: RouterMessage): Boolean {
+        val parser = ListOperationGrammar.parser()
         return parser.run(message.content).matched
     }
 

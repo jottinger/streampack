@@ -4,16 +4,16 @@ package com.enigmastation.streampack.whiteboard.operation
 import com.enigmastation.streampack.extensions.compress
 import com.enigmastation.streampack.whiteboard.model.RouterMessage
 import com.enigmastation.streampack.whiteboard.model.RouterOperation
-import com.github.mpe85.grampa.parser.Parser
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.ApplicationContext
 import org.springframework.stereotype.Service
 
 @Service
 class HelpOperation(val context: ApplicationContext) : RouterOperation(), InitializingBean {
-    lateinit var parser: Parser<String>
+    lateinit var operations: List<RouterOperation>
 
     override fun canHandle(message: RouterMessage): Boolean {
+        val parser = HelpOperationGrammar.parser(operations)
         return parser.run(message.content).matched
     }
 
@@ -29,6 +29,7 @@ class HelpOperation(val context: ApplicationContext) : RouterOperation(), Initia
         if (!canHandle(message)) {
             return null
         }
+        val parser = HelpOperationGrammar.parser(operations)
         val operation = parser.run(message.content).stackTop
 
         return if (operation.isNullOrEmpty()) {
@@ -53,8 +54,7 @@ class HelpOperation(val context: ApplicationContext) : RouterOperation(), Initia
     }
 
     override fun afterPropertiesSet() {
-        var operations =
+        operations =
             context.getBeansOfType(RouterOperation::class.java).values.filterNotNull().toList()
-        parser = HelpOperationGrammar.parser(operations)
     }
 }

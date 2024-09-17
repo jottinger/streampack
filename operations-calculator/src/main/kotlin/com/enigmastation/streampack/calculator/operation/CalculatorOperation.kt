@@ -8,13 +8,14 @@ import org.springframework.stereotype.Service
 
 @Service
 class CalculatorOperation(val service: MathService) : RouterOperation(priority = 9) {
-    val parser = CalcOperationGrammar.parser()
 
     override fun canHandle(message: RouterMessage): Boolean {
+        val parser = CalcOperationGrammar.parser()
         return parser.run(message.content).matched
     }
 
     override fun handleMessage(message: RouterMessage): RouterMessage? {
+        val parser = CalcOperationGrammar.parser()
         return parser.run(message.content).stackTop?.let { expression ->
             try {
                 val result = service.evaluate(expression).toString().toBigDecimalOrNull()
