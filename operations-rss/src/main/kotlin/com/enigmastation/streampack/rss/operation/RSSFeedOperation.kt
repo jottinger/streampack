@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service
 @Service
 @ConditionalOnProperty(prefix = "streampack.rss", name = ["enabled"], matchIfMissing = false)
 class RSSFeedOperation(val rssFeedService: RSSFeedService) : RouterOperation() {
-    private val parser = RSSFeedGrammar.parser()
 
     override fun description(): String {
         return """~rss add [url] will add a feed for this channel, such that new entries will be echoed when they are read.
@@ -25,6 +24,7 @@ class RSSFeedOperation(val rssFeedService: RSSFeedService) : RouterOperation() {
     }
 
     override fun canHandle(message: RouterMessage): Boolean {
+        val parser = RSSFeedGrammar.parser()
         return parser.run(message.content).matched
     }
 
@@ -32,6 +32,7 @@ class RSSFeedOperation(val rssFeedService: RSSFeedService) : RouterOperation() {
         if (!canHandle(message)) {
             return null
         }
+        val parser = RSSFeedGrammar.parser()
         val action = parser.run(message.content).stackTop
         return action?.let {
             requireNonNull(action.action)
