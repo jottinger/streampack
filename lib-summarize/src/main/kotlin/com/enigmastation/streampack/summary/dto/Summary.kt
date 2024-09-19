@@ -1,9 +1,7 @@
 /* Joseph B. Ottinger (C)2024 */
-package com.enigmastation.streampack.summarize.model
+package com.enigmastation.streampack.summary.dto
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-
-@JsonIgnoreProperties(ignoreUnknown = true)
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
 class Summary {
     var summary: String? = null
     var categories: List<String>? = null

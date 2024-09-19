@@ -1,6 +1,7 @@
 /* Joseph B. Ottinger (C)2024 */
 package com.enigmastation.streampack.summarize.service
 
+import com.enigmastation.streampack.summary.service.SummarizeService
 import kotlin.test.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired

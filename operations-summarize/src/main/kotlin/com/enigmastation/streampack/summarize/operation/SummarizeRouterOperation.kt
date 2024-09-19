@@ -5,7 +5,7 @@ import com.enigmastation.streampack.extensions.compress
 import com.enigmastation.streampack.extensions.joinToStringWithAnd
 import com.enigmastation.streampack.extensions.toURL
 import com.enigmastation.streampack.summarize.model.SummarizeConfiguration
-import com.enigmastation.streampack.summarize.service.SummarizeService
+import com.enigmastation.streampack.summary.service.SummarizeService
 import com.enigmastation.streampack.whiteboard.model.RouterMessage
 import com.enigmastation.streampack.whiteboard.model.RouterOperation
 import java.time.Duration

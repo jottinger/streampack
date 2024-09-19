@@ -1,8 +1,8 @@
 /* Joseph B. Ottinger (C)2024 */
-package com.enigmastation.streampack.summarize.service
+package com.enigmastation.streampack.summary.service
 
 import com.enigmastation.streampack.extensions.toURL
-import com.enigmastation.streampack.summarize.model.Summary
+import com.enigmastation.streampack.summary.dto.Summary
 import com.enigmastation.streampack.web.service.JsoupService
 import com.fasterxml.jackson.databind.ObjectMapper
 import java.net.URL
@@ -47,7 +47,7 @@ class SummarizeService() {
                 Your response should be in JSON format.
                 If no summary is possible due to errors or not enough content, 
                 set the summary to the literal text value "no summary possible" and the categories to an empty list.
-                The data structure for the JSON should match this Kotlin class: com.enigmastation.streampack.summarize.model.Summary
+                The data structure for the JSON should match this Kotlin class: com.enigmastation.streampack.summary.dto.Summary
                 Do not include any explanations, only provide a RFC8259 compliant JSON response 
                 following this format without deviation.
                 """
