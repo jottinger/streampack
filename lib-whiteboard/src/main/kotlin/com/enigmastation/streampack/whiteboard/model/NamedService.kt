@@ -18,7 +18,7 @@ abstract class NamedService(name: String? = null, timeout: Duration? = null) {
             }
         }
 
-    var timeout: Duration = timeout ?: Duration.of(5, ChronoUnit.SECONDS)
+    var timeout: Duration = timeout ?: DEFAULT_TIMEOUT
 
     open fun canHandle(message: RouterMessage): Boolean = true
 
@@ -29,4 +29,8 @@ abstract class NamedService(name: String? = null, timeout: Duration? = null) {
     open fun description(): String = "No short description for $name"
 
     open fun longDescription(): String = "No long description for $name"
+
+    companion object {
+        val DEFAULT_TIMEOUT = Duration.of(5, ChronoUnit.SECONDS)
+    }
 }

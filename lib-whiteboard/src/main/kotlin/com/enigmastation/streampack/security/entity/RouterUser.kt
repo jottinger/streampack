@@ -56,11 +56,11 @@ class RouterUser(
         replaceWith = ReplaceWith("getAuthorities()")
     )
     fun getRoles(): List<String> {
-        return getAuthorities().map { it.authority }
+        return authorities.map { it.authority }
     }
 
     fun hasRole(role: String): Boolean {
-        return getAuthorities().contains(SimpleGrantedAuthority("ROLE_${role}".uppercase()))
+        return authorities.contains(SimpleGrantedAuthority("ROLE_${role}".uppercase()))
     }
 
     override fun toString(): String {

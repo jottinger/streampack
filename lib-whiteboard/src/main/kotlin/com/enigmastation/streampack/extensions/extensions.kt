@@ -50,10 +50,12 @@ fun String.htmlDecode() = StringEscapeUtils.unescapeHtml4(this)
 
 fun String.htmlEncode() = StringEscapeUtils.escapeHtml4(this)
 
+const val STANDARD_TIMEOUT = 50L
+
 fun watchWithTimeout(thing: () -> Boolean, timeout: Int = 5000) {
     val start = System.currentTimeMillis()
     while (thing() == false && (System.currentTimeMillis() - start) < timeout) {
-        Thread.sleep(50) // Avoid busy-waiting; check every 100ms
+        Thread.sleep(STANDARD_TIMEOUT) // Avoid busy-waiting; check every 100ms
     }
     println("Delay: ${System.currentTimeMillis() - start} ms")
 }

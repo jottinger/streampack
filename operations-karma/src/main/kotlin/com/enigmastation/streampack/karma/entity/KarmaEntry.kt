@@ -26,7 +26,7 @@ class KarmaEntry(
     @Column(nullable = false) var selector: String? = null,
     @Column(nullable = false) var increment: Int? = null,
     @Column(nullable = false) var createTimestamp: OffsetDateTime? = null,
-    @Column(nullable = true) var comment: String? = null
+    @Column(nullable = true, length = 512) var comment: String? = null
 ) {
     @PrePersist
     fun updateCreateTimestamp() {
