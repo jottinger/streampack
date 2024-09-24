@@ -2,26 +2,41 @@
 package com.enigmastation.streampack.rss.service
 
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import okhttp3.mockwebserver.Dispatcher
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.RecordedRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
-/** TODO we need to find a better way than relying on external sites for these tests. */
 @SpringBootTest
 class RSSFeedServiceTests {
     @Autowired lateinit var service: RSSFeedService
-
-    // TODO set up mocks so we can test this stuff out again
+    val homepage = this::class.java.getResource("/enigmastation.html")!!.readText()
+    val rss = this::class.java.getResource("/enigmastation.rss")!!.readText()
 
     @Test
     fun `read feed`() {
-        println(service.findFeedFromSite("https://enigmastation.com/"))
+        val mockWebServer = MockWebServer()
+        val dispatcher =
+            object : Dispatcher() {
+                override fun dispatch(request: RecordedRequest): MockResponse {
+                    return when (request.path) {
+                        "/" -> MockResponse().setResponseCode(200).setBody(homepage)
+                        "/feed/" -> MockResponse().setResponseCode(200).setBody(rss)
+                        else -> MockResponse().setResponseCode(404)
+                    }
+                }
+            }
+        mockWebServer.dispatcher = dispatcher
+        mockWebServer.start()
+        val url = mockWebServer.url("/").toString()
+
+        assertEquals("https://enigmastation.com/feed/", service.findFeedFromSite(url))
+        val feed = service.readFeed("${url}feed/")
+        assertNotNull(feed)
+        assertEquals(10, feed.entries.size)
     }
-    //
-    //    @Test
-    //    fun `read substack url`() {
-    //        val url = service.findFeedFromSite("https://hwfo.substack.com/")
-    //        println(url)
-    //        assertEquals("https://hwfo.substack.com/feed", url)
-    //        // println(service.getFeed(url))
-    //    }
 }
