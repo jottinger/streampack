@@ -69,7 +69,7 @@
         <jsoup.version>1.18.1</jsoup.version>
         <commons-text.version>1.12.0</commons-text.version>
         <kitteh.version>9.0.0</kitteh.version>
-        <jda.version>5.1.0</jda.version>
+        <jda.version>5.1.1</jda.version>
         <parser-ng.version>0.1.9-release</parser-ng.version>
         <guava.version>33.3.0-jre</guava.version>
         <grampa.version>1.4.0</grampa.version>
