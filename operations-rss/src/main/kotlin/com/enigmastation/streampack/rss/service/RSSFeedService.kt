@@ -198,7 +198,8 @@ class RSSFeedService(
         return value
     }
 
-    private fun saveFeed(
+    @Transactional
+    fun saveFeed(
         url: String,
         feedUrl: String,
         channelName: String,
@@ -217,6 +218,7 @@ class RSSFeedService(
         )
     }
 
+    @Transactional
     fun readFeed(rssFeed: RSSFeed): List<RSSEntry> {
         val feed = readFeed(rssFeed.feedUrl.toString())
         val staleEntries: MutableList<RSSEntry> = mutableListOf(*getEntries(rssFeed).toTypedArray())
@@ -245,6 +247,9 @@ class RSSFeedService(
                                     feed = rssFeed,
                                     title = entry.title ?: entry.link ?: entry.uri,
                                     url = (entry.link?.toURL()) ?: entry.uri.toURL(),
+                                    summary = entry.description?.value ?: "",
+                                    summarized = false,
+                                    llmSummary = "",
                                     published =
                                         if (entry.publishedDate != null) {
                                             entry.publishedDate
@@ -269,17 +274,13 @@ class RSSFeedService(
 
     fun readFeed(url: String): SyndFeed? {
         // logger.info("in getFeed({})", url)
-        val client = okHttpService.client()
-        val request = okHttpService.buildRequest(url)
-        return client.newCall(request).execute().use { response ->
-            val feed = response.body!!.string()
-            val input = SyndFeedInput()
-            return try {
-                input.build(XmlReader(ByteArrayInputStream(feed.toByteArray(Charsets.UTF_8))))
-            } catch (e: FeedException) {
-                // println(feed)
-                throw IOException("Could not parse response", e)
-            }
+        val feed = okHttpService.getUrl(url)
+        val input = SyndFeedInput()
+        return try {
+            input.build(XmlReader(ByteArrayInputStream(feed.toByteArray(Charsets.UTF_8))))
+        } catch (e: FeedException) {
+            // println(feed)
+            throw IOException("Could not parse response", e)
         }
     }
 

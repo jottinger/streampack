@@ -1,6 +1,7 @@
 /* Joseph B. Ottinger (C)2024 */
 package com.enigmastation.streampack.rss.entity
 
+import jakarta.persistence.Column
 import jakarta.persistence.ElementCollection
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
@@ -20,8 +21,9 @@ class RSSEntry(
     @ManyToOne(optional = true) var feed: RSSFeed? = null,
     var title: String? = null,
     var url: URL? = null,
-    var summary: String? = null,
-    @ElementCollection(fetch = FetchType.EAGER) var categgories: List<String>? = null,
+    @Column(columnDefinition = "text") var summary: String? = null,
+    @Column(columnDefinition = "text") var llmSummary: String? = null,
+    @ElementCollection(fetch = FetchType.EAGER) var categories: List<String>? = null,
     var summarized: Boolean? = null,
     var published: OffsetDateTime? = null,
     var createDate: OffsetDateTime? = null,

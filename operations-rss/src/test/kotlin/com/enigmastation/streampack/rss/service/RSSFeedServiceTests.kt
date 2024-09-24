@@ -1,6 +1,7 @@
 /* Joseph B. Ottinger (C)2024 */
 package com.enigmastation.streampack.rss.service
 
+import kotlin.test.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
@@ -11,10 +12,10 @@ class RSSFeedServiceTests {
 
     // TODO set up mocks so we can test this stuff out again
 
-    //    @Test
-    //    fun `read feed`() {
-    //        println(service.findFeedFromSite("https://enigmastation.com/"))
-    //    }
+    @Test
+    fun `read feed`() {
+        println(service.findFeedFromSite("https://enigmastation.com/"))
+    }
     //
     //    @Test
     //    fun `read substack url`() {
