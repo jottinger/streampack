@@ -71,7 +71,7 @@
         <kitteh.version>9.0.0</kitteh.version>
         <jda.version>5.1.1</jda.version>
         <parser-ng.version>0.1.9-release</parser-ng.version>
-        <guava.version>33.3.0-jre</guava.version>
+        <guava.version>33.3.1-jre</guava.version>
         <grampa.version>1.4.0</grampa.version>
     </properties>
 
