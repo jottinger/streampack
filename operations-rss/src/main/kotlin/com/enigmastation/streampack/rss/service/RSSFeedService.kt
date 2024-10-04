@@ -326,9 +326,8 @@ class RSSFeedService(
 
     @Transactional
     fun summarizeSingleEntry() {
-        val entry = rssEntryRepository.findRSSEntryByLlmSummary("")
-        if (entry.isPresent) {
-            val e = entry.get()
+        val entry = rssEntryRepository.findRSSEntryByLlmSummary("").firstOrNull()
+        entry?.let { e ->
             val summary = summarizeService.summarizeURL(e.url!!)
             e.llmSummary = summary.summary
             logger.info("Summarized {} as {}", e.url, e.llmSummary)
