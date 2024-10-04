@@ -35,7 +35,7 @@ class RSSFeedService(
     val channelService: ChannelService,
     val jsoupService: JsoupService,
     val okHttpService: OkHttpService,
-    val summarizeService: SummarizeService
+    var summarizeService: SummarizeService
 ) {
     companion object {
         private val acceptableRSSTypes =
@@ -328,6 +328,7 @@ class RSSFeedService(
     fun summarizeSingleEntry() {
         val entry = rssEntryRepository.findRSSEntryBySummarized(false).firstOrNull()
         entry?.let { e ->
+            logger.info("Attempting to summarize {}", e.url)
             val summary = summarizeService.summarizeURL(e.url!!)
             e.llmSummary = summary.summary
             e.summarized = true
