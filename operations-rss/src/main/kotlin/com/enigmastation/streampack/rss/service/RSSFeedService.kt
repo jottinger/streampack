@@ -253,14 +253,14 @@ class RSSFeedService(
                                     summarized = false,
                                     llmSummary = "",
                                     published =
-                                    if (entry.publishedDate != null) {
-                                        entry.publishedDate
-                                            .toInstant()
-                                            .atZone(ZoneId.systemDefault())
-                                            .toOffsetDateTime()
-                                    } else {
-                                        OffsetDateTime.now()
-                                    }
+                                        if (entry.publishedDate != null) {
+                                            entry.publishedDate
+                                                .toInstant()
+                                                .atZone(ZoneId.systemDefault())
+                                                .toOffsetDateTime()
+                                        } else {
+                                            OffsetDateTime.now()
+                                        }
                                 )
                             )
                         } catch (e: Throwable) {
@@ -326,9 +326,7 @@ class RSSFeedService(
 
     @Transactional
     fun summarizeSingleEntry() {
-        val entry = rssEntryRepository.findRSSEntryBySummarized(false)
-            .shuffled()
-            .firstOrNull()
+        val entry = rssEntryRepository.findRSSEntryBySummarized(false).shuffled().firstOrNull()
         entry?.let { e ->
             logger.info("Attempting to summarize {}", e.url)
             val summary = summarizeService.summarizeURL(e.url!!)
