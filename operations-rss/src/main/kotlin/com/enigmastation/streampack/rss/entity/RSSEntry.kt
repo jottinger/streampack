@@ -37,6 +37,9 @@ class RSSEntry(
 
     @PreUpdate
     fun updateEntity() {
+        if (summarized == null) {
+            summarized = false
+        }
         updateDate = OffsetDateTime.now()
     }
 }
