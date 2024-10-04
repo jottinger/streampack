@@ -29,7 +29,7 @@ class RSSRouterService() : RouterService() {
         return false
     }
 
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 */2 * * * *")
     fun summarizeSingleEntry() {
         feedService.summarizeSingleEntry()
     }
