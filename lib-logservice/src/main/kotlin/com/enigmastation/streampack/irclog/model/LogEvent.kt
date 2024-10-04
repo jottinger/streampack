@@ -32,7 +32,7 @@ class LogEvent(
     // server, like libera.chat for IRC, or a guild for discord
     var server: String? = null,
     var channel: String? = null,
-    @Column(length = 512) var message: String? = null,
+    @Column(columnDefinition = "text") var message: String? = null,
     @Enumerated(EnumType.STRING) var eventType: LogEventType? = LogEventType.MESSAGE,
     var timestamp: OffsetDateTime? = null
 ) {
