@@ -29,6 +29,11 @@ class RSSRouterService() : RouterService() {
         return false
     }
 
+    @Scheduled(cron = "0 * * * * *")
+    fun summarizeSingleEntry() {
+        feedService.summarizeSingleEntry()
+    }
+
     @Scheduled(cron = "0 0 * * * *")
     fun readFeeds() {
         val contextToEntries = mutableMapOf<UUID?, List<String>>()

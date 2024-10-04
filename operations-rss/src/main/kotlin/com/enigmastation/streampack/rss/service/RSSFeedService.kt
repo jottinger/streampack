@@ -8,6 +8,7 @@ import com.enigmastation.streampack.rss.entity.RSSEntry
 import com.enigmastation.streampack.rss.entity.RSSFeed
 import com.enigmastation.streampack.rss.repository.RSSEntryRepository
 import com.enigmastation.streampack.rss.repository.RSSFeedRepository
+import com.enigmastation.streampack.summary.service.SummarizeService
 import com.enigmastation.streampack.web.service.JsoupService
 import com.enigmastation.streampack.web.service.OkHttpService
 import com.enigmastation.streampack.whiteboard.model.MessageSource
@@ -33,7 +34,8 @@ class RSSFeedService(
     val rssEntryRepository: RSSEntryRepository,
     val channelService: ChannelService,
     val jsoupService: JsoupService,
-    val okHttpService: OkHttpService
+    val okHttpService: OkHttpService,
+    val summarizeService: SummarizeService
 ) {
     companion object {
         private val acceptableRSSTypes =
@@ -319,6 +321,17 @@ class RSSFeedService(
                 rssEntryRepository.deleteAll(getEntries(f))
                 rssFeedRepository.delete(f)
             }
+        }
+    }
+
+    @Transactional
+    fun summarizeSingleEntry() {
+        val entry = rssEntryRepository.findRSSEntryByLlmSummaryIsNull()
+        if (entry.isPresent) {
+            val e = entry.get()
+            val summary = summarizeService.summarizeURL(e.url!!)
+            e.llmSummary = summary.summary
+            logger.info("Summarized {} as {}", e.url, e.llmSummary)
         }
     }
 }

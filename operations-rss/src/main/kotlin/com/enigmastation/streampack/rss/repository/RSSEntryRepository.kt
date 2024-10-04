@@ -14,4 +14,6 @@ interface RSSEntryRepository : JpaRepository<RSSEntry, UUID> {
     fun findByUrl(url: URL): Optional<RSSEntry>
 
     fun findByFeedOrderByPublishedDesc(feed: RSSFeed): List<RSSEntry>
+
+    fun findRSSEntryByLlmSummaryIsNull(): Optional<RSSEntry>
 }
