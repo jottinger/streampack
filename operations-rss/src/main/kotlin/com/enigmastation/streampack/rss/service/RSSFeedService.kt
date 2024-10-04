@@ -253,14 +253,14 @@ class RSSFeedService(
                                     summarized = false,
                                     llmSummary = "",
                                     published =
-                                        if (entry.publishedDate != null) {
-                                            entry.publishedDate
-                                                .toInstant()
-                                                .atZone(ZoneId.systemDefault())
-                                                .toOffsetDateTime()
-                                        } else {
-                                            OffsetDateTime.now()
-                                        }
+                                    if (entry.publishedDate != null) {
+                                        entry.publishedDate
+                                            .toInstant()
+                                            .atZone(ZoneId.systemDefault())
+                                            .toOffsetDateTime()
+                                    } else {
+                                        OffsetDateTime.now()
+                                    }
                                 )
                             )
                         } catch (e: Throwable) {
@@ -331,6 +331,7 @@ class RSSFeedService(
             val summary = summarizeService.summarizeURL(e.url!!)
             e.llmSummary = summary.summary
             logger.info("Summarized {} as {}", e.url, e.llmSummary)
+            rssEntryRepository.save(e)
         }
     }
 }
