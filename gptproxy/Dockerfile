@@ -5,7 +5,7 @@ FROM golang:1.20-alpine AS builder
 WORKDIR /app
 
 # Copy the Go modules files
-COPY ./gptproxy/go.mod ./gptproxy/go.sum ./
+COPY ./gptproxy/go.mod ./
 
 # Download dependencies
 RUN go mod download
