@@ -11,9 +11,9 @@ import (
 )
 
 func loadAPIKey() (string, error) {
-	apiKey := os.Getenv("API_KEY")
+	apiKey := os.Getenv("OPENAI_API_KEY")
 	if apiKey == "" {
-		return "", fmt.Errorf("API_KEY environment variable not set")
+		return "", fmt.Errorf("OPENAI_API_KEY environment variable not set")
 	}
 	return apiKey, nil
 }
