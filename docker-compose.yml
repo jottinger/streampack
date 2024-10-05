@@ -35,12 +35,13 @@ services:
   gptproxy:
     build:
       context: .
-      dockerfile: Dockerfile
-    env_file: .env
-    networks:
-      streampack:
+      dockerfile: ./gptproxy/Dockerfile
     ports:
       - "8084:8084"
+    env_file:
+      - .env
+    environment:
+      - PORT=8084
   streampack:
     build:
       context: .

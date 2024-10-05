@@ -1,31 +1,20 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"strings"
 )
 
 func loadAPIKey() (string, error) {
-	file, err := os.Open(".env")
-	if err != nil {
-		return "", err
+	apiKey := os.Getenv("API_KEY")
+	if apiKey == "" {
+		return "", fmt.Errorf("API_KEY environment variable not set")
 	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
-		if strings.HasPrefix(line, "OPENAI_API_KEY=") {
-			return strings.TrimPrefix(line, "OPENAI_API_KEY="), nil
-		}
-	}
-	return "", nil
+	return apiKey, nil
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -89,6 +78,12 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/", handler)
-	log.Println("Server started on port 8084")
-	log.Fatal(http.ListenAndServe(":8084", nil))
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	log.Println("Server started on port", port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
