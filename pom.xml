@@ -61,7 +61,7 @@
         <java.version>21</java.version>
         <kotlin.version>2.0.20</kotlin.version>
         <spotless.version>2.43.0</spotless.version>
-        <surefire.version>3.5.0</surefire.version>
+        <surefire.version>3.5.1</surefire.version>
         <jacoco.version>0.8.12</jacoco.version>
         <mockk.version>1.13.12</mockk.version>
         <springdoc.version>2.6.0</springdoc.version>
