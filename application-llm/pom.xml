@@ -13,7 +13,7 @@
     <artifactId>application-llm</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <properties>
-        <spring-ai.version>1.0.0.M2</spring-ai.version>
+        <spring-ai.version>1.0.0-M2-PLATFORM</spring-ai.version>
     </properties>
     <dependencyManagement>
         <dependencies>
