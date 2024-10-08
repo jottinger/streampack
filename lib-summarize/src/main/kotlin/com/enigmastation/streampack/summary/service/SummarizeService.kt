@@ -51,7 +51,11 @@ class SummarizeService() {
                 Your response should be in JSON format.
                 If no summary is possible due to errors or not enough content, 
                 set the summary to the literal text value "no summary possible" and the categories to an empty list.
-                The data structure for the JSON should match this Kotlin class: com.enigmastation.streampack.summary.dto.Summary
+                The data structure for the JSON should have two attributes, and match this kotlin class definition:
+                ```class Summary {
+                    var summary: String? = null
+                    var categories: List<String>? = null
+                }```
                 Do not include any explanations, only provide a RFC8259 compliant JSON response 
                 following this format without deviation.
                 """
