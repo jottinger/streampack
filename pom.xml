@@ -63,7 +63,7 @@
         <spotless.version>2.43.0</spotless.version>
         <surefire.version>3.5.1</surefire.version>
         <jacoco.version>0.8.12</jacoco.version>
-        <mockk.version>1.13.12</mockk.version>
+        <mockk.version>1.13.13</mockk.version>
         <springdoc.version>2.6.0</springdoc.version>
         <rome.version>2.1.0</rome.version>
         <jsoup.version>1.18.1</jsoup.version>
