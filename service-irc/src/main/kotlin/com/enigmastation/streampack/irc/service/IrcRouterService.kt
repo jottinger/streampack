@@ -96,7 +96,11 @@ class IrcRouterService() : RouterService(), InitializingBean {
 
     override fun canHandle(message: RouterMessage): Boolean {
         logger.debug("canHandle message: {}", message)
-        return message.messageSource == MessageSource.IRC
+        return when (message.messageSource) {
+            MessageSource.RSS,
+            MessageSource.IRC -> true
+            else -> false
+        }
     }
 
     override fun handleMessage(message: RouterMessage) {
