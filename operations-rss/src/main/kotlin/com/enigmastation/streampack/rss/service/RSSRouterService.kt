@@ -51,12 +51,6 @@ class RSSRouterService() : RouterService() {
                 feed.contexts.forEach { context ->
                     contextToEntries[context.id] =
                         (contextToEntries[context.id] ?: listOf()) + entries
-                    logger.info(
-                        "Found new entries for {}: {}",
-                        context.name,
-                        entries.joinToString(",")
-                    )
-                    // val entries = feedService.findNewEntries().take(3)
                 }
             } else {
                 logger.info("Feed ${feed.url} has blank context: skipping read")
