@@ -86,7 +86,7 @@ class RSSFeedOperationTests {
     }
 
     @Test
-    fun `test flurg dot com`(){
+    fun `test flurg dot com`() {
         val response =
             operation.handleMessage(
                 routerMessage {
@@ -99,7 +99,6 @@ class RSSFeedOperationTests {
         // this should add an RSS feed at https://enigmastation.com/feed/ to the rss feeds
         watchWithTimeout({ rssFeedRepository.findAll().isNotEmpty() })
         println(response)
-
     }
 
     @Test
@@ -195,6 +194,11 @@ class RSSFeedOperationTests {
                 Arguments.of("~rss add htts://enigmastation.com/", false, null),
                 Arguments.of(
                     "~rss delete https://enigmastation.com/",
+                    true,
+                    RSSAction(RSSActionOperation.DELETE, "https://enigmastation.com/")
+                ),
+                Arguments.of(
+                    "~rss del https://enigmastation.com/",
                     true,
                     RSSAction(RSSActionOperation.DELETE, "https://enigmastation.com/")
                 ),

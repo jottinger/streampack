@@ -22,9 +22,9 @@ open class RSSFeedGrammar : ExtendedGrammar<RSSAction>() {
             string("rss"),
             wsp(),
             sequence(
-                choice(string("add"), string("del"), string("delete"), string("info")),
+                choice(string("add"),  string("delete"), string("del"), string("info")),
                 push {
-                    val operation = when (it.previousMatch!!.toString()) {
+                    val operation=when(it.previousMatch!!.toString()) {
                         "del" -> "delete"
                         else -> it.previousMatch.toString()
                     }
