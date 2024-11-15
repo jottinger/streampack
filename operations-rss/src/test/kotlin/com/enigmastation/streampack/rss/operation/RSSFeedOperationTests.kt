@@ -86,6 +86,23 @@ class RSSFeedOperationTests {
     }
 
     @Test
+    fun `test flurg dot com`(){
+        val response =
+            operation.handleMessage(
+                routerMessage {
+                    content = "~rss add https://word-bits.flurg.com"
+                    context = "#test"
+                    messageSource = MessageSource.IRC
+                    server = "irc.libera.chat"
+                }
+            )
+        // this should add an RSS feed at https://enigmastation.com/feed/ to the rss feeds
+        watchWithTimeout({ rssFeedRepository.findAll().isNotEmpty() })
+        println(response)
+
+    }
+
+    @Test
     fun `rss happy path mutate feed`() {
         val response =
             operation.handleMessage(

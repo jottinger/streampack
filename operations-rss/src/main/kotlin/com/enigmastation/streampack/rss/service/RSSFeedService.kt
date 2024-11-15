@@ -17,6 +17,9 @@ import com.rometools.rome.io.FeedException
 import com.rometools.rome.io.SyndFeedInput
 import com.rometools.rome.io.XmlReader
 import jakarta.transaction.Transactional
+import org.hibernate.Hibernate
+import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Service
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.net.URI
@@ -24,9 +27,6 @@ import java.net.URL
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.util.Optional
-import org.hibernate.Hibernate
-import org.slf4j.LoggerFactory
-import org.springframework.stereotype.Service
 
 @Service
 class RSSFeedService(
@@ -228,7 +228,12 @@ class RSSFeedService(
         feed?.let {
             // first let's update the actual feed itself
             rssFeed.title = feed.title
-            rssFeed.url = ((feed.link?.toURL() ?: feed.uri?.toURL())) ?: rssFeed.feedUrl
+            // we need to figure out the base path of the feed here. It would normally be in link or uri for feed,
+            // but we MAY need to derive it ... somehow. Possibly the user gave it to us in the first place!
+            try {
+                rssFeed.url = ((feed.link?.toURL() ?: feed.uri?.toURL())) ?: rssFeed.feedUrl
+            } catch (_: Throwable) {
+            }
             // reset the time!
             rssFeed.updateEntity()
 
@@ -236,7 +241,15 @@ class RSSFeedService(
             newEntries +=
                 feed.entries
                     .filter { entry ->
-                        val e = rssEntryRepository.findByUrl(entry.link.toURL())
+                        val url: URL = try {
+                            entry.link.toURL()
+                        } catch (e: Exception) {
+                            // ugh. Maybe it's a relative link. Let's get the base url and combine that.
+                            val u: URL = rssFeed.feedUrl!!
+                            combinePaths("${u.protocol}://${u.host}", entry.link).toURL()
+                        }
+                        // if the link is not absolute, we may need to prepend the site's path to the entry's link.
+                        val e = rssEntryRepository.findByUrl(url)
                         if (e.isPresent) {
                             staleEntries.removeIf({ it.url!!.equals(entry.link.toURL()) })
                         }
@@ -248,19 +261,25 @@ class RSSFeedService(
                                 RSSEntry(
                                     feed = rssFeed,
                                     title = entry.title ?: entry.link ?: entry.uri,
-                                    url = (entry.link?.toURL()) ?: entry.uri.toURL(),
+                                    url = try {
+                                        (entry.link ?: entry.uri).toURL()
+                                    } catch (e: Exception) {
+                                        // ugh. Maybe it's a relative link. Let's get the base url and combine that.
+                                        val u: URL = rssFeed.feedUrl!!
+                                        combinePaths("${u.protocol}://${u.host}", entry.link).toURL()
+                                    },
                                     summary = entry.description?.value ?: "",
                                     summarized = false,
                                     llmSummary = "",
                                     published =
-                                        if (entry.publishedDate != null) {
-                                            entry.publishedDate
-                                                .toInstant()
-                                                .atZone(ZoneId.systemDefault())
-                                                .toOffsetDateTime()
-                                        } else {
-                                            OffsetDateTime.now()
-                                        }
+                                    if (entry.publishedDate != null) {
+                                        entry.publishedDate
+                                            .toInstant()
+                                            .atZone(ZoneId.systemDefault())
+                                            .toOffsetDateTime()
+                                    } else {
+                                        OffsetDateTime.now()
+                                    }
                                 )
                             )
                         } catch (e: Throwable) {
