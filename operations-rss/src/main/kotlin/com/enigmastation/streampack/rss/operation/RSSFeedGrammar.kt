@@ -22,16 +22,14 @@ open class RSSFeedGrammar : ExtendedGrammar<RSSAction>() {
             string("rss"),
             wsp(),
             sequence(
-                choice(string("add"),  string("delete"), string("del"), string("info")),
+                choice(string("add"), string("delete"), string("del"), string("info")),
                 push {
-                    val operation=when(it.previousMatch!!.toString()) {
-                        "del" -> "delete"
-                        else -> it.previousMatch.toString()
-                    }
-                    pop(it)
-                        .setAction(
-                            RSSActionOperation.valueOf(operation.uppercase())
-                        )
+                    val operation =
+                        when (it.previousMatch!!.toString()) {
+                            "del" -> "delete"
+                            else -> it.previousMatch.toString()
+                        }
+                    pop(it).setAction(RSSActionOperation.valueOf(operation.uppercase()))
                 },
                 wsp(),
                 sequence(url(), push { pop(it).setUrl(it.previousMatch!!.toString()) })

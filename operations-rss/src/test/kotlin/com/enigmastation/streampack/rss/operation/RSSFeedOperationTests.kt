@@ -96,7 +96,23 @@ class RSSFeedOperationTests {
                     server = "irc.libera.chat"
                 }
             )
-        // this should add an RSS feed at https://enigmastation.com/feed/ to the rss feeds
+        // this should add an RSS feed at https://word-bits.flurg.com/rss.xml to the rss feeds
+        watchWithTimeout({ rssFeedRepository.findAll().isNotEmpty() })
+        println(response)
+    }
+
+    @Test
+    fun `test brettrowberry dot com`() {
+        val response =
+            operation.handleMessage(
+                routerMessage {
+                    content = "~rss add https://brettrowberry.com/?source=top_nav_blog_home"
+                    context = "#test"
+                    messageSource = MessageSource.IRC
+                    server = "irc.libera.chat"
+                }
+            )
+        // this should add an RSS feed at https://brettrowberry.com/rss.xml to the rss feeds
         watchWithTimeout({ rssFeedRepository.findAll().isNotEmpty() })
         println(response)
     }
