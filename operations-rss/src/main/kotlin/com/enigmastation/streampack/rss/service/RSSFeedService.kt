@@ -308,7 +308,7 @@ class RSSFeedService(
             input.build(XmlReader(ByteArrayInputStream(feed.toByteArray(Charsets.UTF_8))))
         } catch (e: FeedException) {
             // println(feed)
-            throw IOException("Could not parse response", e)
+            throw IOException("Could not parse response for feed $url", e)
         }
     }
 
