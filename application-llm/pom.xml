@@ -13,7 +13,7 @@
     <artifactId>application-llm</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <properties>
-        <spring-ai.version>1.0.0.M2</spring-ai.version>
+        <spring-ai.version>1.0.0-M3</spring-ai.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -32,6 +32,11 @@
             <groupId>com.enigmastation.streampack</groupId>
             <artifactId>lib-logservice</artifactId>
             <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tuxdude.logback.extensions</groupId>
+            <artifactId>logback-colorizer</artifactId>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.enigmastation.streampack</groupId>

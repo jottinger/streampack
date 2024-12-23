@@ -11,6 +11,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.internal.closeQuietly
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
@@ -60,10 +61,14 @@ class OkHttpService() : InitializingBean {
     fun getUrl(url: String): String {
         val request = buildRequest(url)
         val response = client(true).newCall(request).execute()
-        return if (response.isSuccessful) {
-            response.body?.string() ?: ""
-        } else {
-            throw Exception("call failed: ${response.code} ${response.message}")
+        return try {
+            if (response.isSuccessful) {
+                response.body?.string() ?: ""
+            } else {
+                throw Exception("call failed: ${response.code} ${response.message}")
+            }
+        } finally {
+            response.closeQuietly()
         }
     }
 

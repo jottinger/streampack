@@ -18,10 +18,10 @@ import org.springframework.stereotype.Service
 class URLTitleOperation() : RouterOperation(priority = 91) {
     @Autowired lateinit var urlTitleService: UrlTitleService
     @Autowired lateinit var configuration: UrlTitleConfiguration
-    private val parser = UrlTitleGrammar.parser()
 
     override fun canHandle(message: RouterMessage): Boolean {
         return if (configuration.services.contains(message.messageSource)) {
+            val parser = UrlTitleGrammar.parser()
             var result = parser.run(message.content)
             return result.stack.isNotEmpty()
         } else {
@@ -33,6 +33,7 @@ class URLTitleOperation() : RouterOperation(priority = 91) {
         if (!canHandle(message)) {
             return null
         }
+        val parser = UrlTitleGrammar.parser()
         var result = parser.run(message.content)
         val foundUrls = result.stack.toList()
 

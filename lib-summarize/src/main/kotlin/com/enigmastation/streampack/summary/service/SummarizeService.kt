@@ -1,17 +1,21 @@
 /* Joseph B. Ottinger (C)2024 */
-package com.enigmastation.streampack.summarize.service
+package com.enigmastation.streampack.summary.service
 
 import com.enigmastation.streampack.extensions.toURL
-import com.enigmastation.streampack.summarize.model.Summary
+import com.enigmastation.streampack.summary.dto.Summary
 import com.enigmastation.streampack.web.service.JsoupService
 import com.fasterxml.jackson.databind.ObjectMapper
+import java.io.IOException
 import java.net.URL
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import org.springframework.ai.chat.client.ChatClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
 class SummarizeService() {
+    @Autowired lateinit var configuration: SummarizeProxyConfiguration
 
     @Autowired lateinit var builder: ChatClient.Builder
 
@@ -47,12 +51,34 @@ class SummarizeService() {
                 Your response should be in JSON format.
                 If no summary is possible due to errors or not enough content, 
                 set the summary to the literal text value "no summary possible" and the categories to an empty list.
-                The data structure for the JSON should match this Kotlin class: com.enigmastation.streampack.summarize.model.Summary
+                The data structure for the JSON should have two attributes, and match this kotlin class definition:
+                ```class Summary {
+                    var summary: String? = null
+                    var categories: List<String>? = null
+                }```
                 Do not include any explanations, only provide a RFC8259 compliant JSON response 
                 following this format without deviation.
                 """
                     .trimIndent()
-            var response = chatClient.prompt().user(query).call().content()
+            var response =
+                try {
+                    chatClient.prompt().user(query).call().content()
+                } catch (e: Exception) {
+                    // we don't use any of the caching capabilities here. We WANT to make the
+                    // service call every time.
+                    if (configuration.enabled) {
+                        var client = OkHttpClient.Builder().build()
+                        val request = Request.Builder().url(configuration.proxyUrl).build()
+                        client.newCall(request).execute().use { response ->
+                            if (!response.isSuccessful)
+                                throw IOException("Unexpected code $response")
+                            response.body!!.string()
+                        }
+                    } else {
+                        throw e
+                    }
+                }
+
             return objectMapper.readValue(response, Summary::class.java)
         } catch (e: Exception) {
             throw e

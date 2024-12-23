@@ -21,11 +21,12 @@ class GetKarmaOperation(val karmaEntryService: KarmaEntryService) :
         val selector = message.content.compress().removePrefix("~").removePrefix("karma ")
         val karma = karmaEntryService.getKarma(selector)
         return if (karmaEntryService.hasKarma(selector)) {
+            val karmaValue = karma.karma.toInt()
             val karmaExpression =
-                if (karma == 0) {
+                if (karmaValue == 0) {
                     "neutral karma"
                 } else {
-                    "karma of $karma"
+                    "karma of $karmaValue"
                 }
             if (message.source.equals(selector, true)) {
                 message.respondWith("$selector, you have $karmaExpression.")

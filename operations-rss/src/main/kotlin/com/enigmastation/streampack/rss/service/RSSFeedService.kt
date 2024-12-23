@@ -8,6 +8,7 @@ import com.enigmastation.streampack.rss.entity.RSSEntry
 import com.enigmastation.streampack.rss.entity.RSSFeed
 import com.enigmastation.streampack.rss.repository.RSSEntryRepository
 import com.enigmastation.streampack.rss.repository.RSSFeedRepository
+import com.enigmastation.streampack.summary.service.SummarizeService
 import com.enigmastation.streampack.web.service.JsoupService
 import com.enigmastation.streampack.web.service.OkHttpService
 import com.enigmastation.streampack.whiteboard.model.MessageSource
@@ -33,7 +34,8 @@ class RSSFeedService(
     val rssEntryRepository: RSSEntryRepository,
     val channelService: ChannelService,
     val jsoupService: JsoupService,
-    val okHttpService: OkHttpService
+    val okHttpService: OkHttpService,
+    var summarizeService: SummarizeService
 ) {
     companion object {
         private val acceptableRSSTypes =
@@ -198,7 +200,8 @@ class RSSFeedService(
         return value
     }
 
-    private fun saveFeed(
+    @Transactional
+    fun saveFeed(
         url: String,
         feedUrl: String,
         channelName: String,
@@ -217,6 +220,7 @@ class RSSFeedService(
         )
     }
 
+    @Transactional
     fun readFeed(rssFeed: RSSFeed): List<RSSEntry> {
         val feed = readFeed(rssFeed.feedUrl.toString())
         val staleEntries: MutableList<RSSEntry> = mutableListOf(*getEntries(rssFeed).toTypedArray())
@@ -224,7 +228,13 @@ class RSSFeedService(
         feed?.let {
             // first let's update the actual feed itself
             rssFeed.title = feed.title
-            rssFeed.url = ((feed.link?.toURL() ?: feed.uri?.toURL())) ?: rssFeed.feedUrl
+            // we need to figure out the base path of the feed here. It would normally be in link or
+            // uri for feed,
+            // but we MAY need to derive it ... somehow. Possibly the user gave it to us in the
+            // first place!
+            try {
+                rssFeed.url = ((feed.link?.toURL() ?: feed.uri?.toURL())) ?: rssFeed.feedUrl
+            } catch (_: Throwable) {}
             // reset the time!
             rssFeed.updateEntity()
 
@@ -232,7 +242,18 @@ class RSSFeedService(
             newEntries +=
                 feed.entries
                     .filter { entry ->
-                        val e = rssEntryRepository.findByUrl(entry.link.toURL())
+                        val url: URL =
+                            try {
+                                entry.link.toURL()
+                            } catch (e: Exception) {
+                                // ugh. Maybe it's a relative link. Let's get the base url and
+                                // combine that.
+                                val u: URL = rssFeed.feedUrl!!
+                                combinePaths("${u.protocol}://${u.host}", entry.link).toURL()
+                            }
+                        // if the link is not absolute, we may need to prepend the site's path to
+                        // the entry's link.
+                        val e = rssEntryRepository.findByUrl(url)
                         if (e.isPresent) {
                             staleEntries.removeIf({ it.url!!.equals(entry.link.toURL()) })
                         }
@@ -244,7 +265,19 @@ class RSSFeedService(
                                 RSSEntry(
                                     feed = rssFeed,
                                     title = entry.title ?: entry.link ?: entry.uri,
-                                    url = (entry.link?.toURL()) ?: entry.uri.toURL(),
+                                    url =
+                                        try {
+                                            (entry.link ?: entry.uri).toURL()
+                                        } catch (e: Exception) {
+                                            // ugh. Maybe it's a relative link. Let's get the base
+                                            // url and combine that.
+                                            val u: URL = rssFeed.feedUrl!!
+                                            combinePaths("${u.protocol}://${u.host}", entry.link)
+                                                .toURL()
+                                        },
+                                    summary = entry.description?.value ?: "",
+                                    summarized = false,
+                                    llmSummary = "",
                                     published =
                                         if (entry.publishedDate != null) {
                                             entry.publishedDate
@@ -269,17 +302,13 @@ class RSSFeedService(
 
     fun readFeed(url: String): SyndFeed? {
         // logger.info("in getFeed({})", url)
-        val client = okHttpService.client()
-        val request = okHttpService.buildRequest(url)
-        return client.newCall(request).execute().use { response ->
-            val feed = response.body!!.string()
-            val input = SyndFeedInput()
-            return try {
-                input.build(XmlReader(ByteArrayInputStream(feed.toByteArray(Charsets.UTF_8))))
-            } catch (e: FeedException) {
-                // println(feed)
-                throw IOException("Could not parse response", e)
-            }
+        val feed = okHttpService.getUrl(url)
+        val input = SyndFeedInput()
+        return try {
+            input.build(XmlReader(ByteArrayInputStream(feed.toByteArray(Charsets.UTF_8))))
+        } catch (e: FeedException) {
+            // println(feed)
+            throw IOException("Could not parse response for feed $url", e)
         }
     }
 
@@ -318,6 +347,19 @@ class RSSFeedService(
                 rssEntryRepository.deleteAll(getEntries(f))
                 rssFeedRepository.delete(f)
             }
+        }
+    }
+
+    @Transactional
+    fun summarizeSingleEntry() {
+        val entry = rssEntryRepository.findRSSEntryBySummarized(false).shuffled().firstOrNull()
+        entry?.let { e ->
+            logger.info("Attempting to summarize {}", e.url)
+            val summary = summarizeService.summarizeURL(e.url!!)
+            e.llmSummary = summary.summary
+            e.summarized = true
+            logger.info("Summarized {} as {}", e.url, e.llmSummary)
+            rssEntryRepository.save(e)
         }
     }
 }

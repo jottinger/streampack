@@ -86,6 +86,38 @@ class RSSFeedOperationTests {
     }
 
     @Test
+    fun `test flurg dot com`() {
+        val response =
+            operation.handleMessage(
+                routerMessage {
+                    content = "~rss add https://word-bits.flurg.com"
+                    context = "#test"
+                    messageSource = MessageSource.IRC
+                    server = "irc.libera.chat"
+                }
+            )
+        // this should add an RSS feed at https://word-bits.flurg.com/rss.xml to the rss feeds
+        watchWithTimeout({ rssFeedRepository.findAll().isNotEmpty() })
+        println(response)
+    }
+
+    @Test
+    fun `test brettrowberry dot com`() {
+        val response =
+            operation.handleMessage(
+                routerMessage {
+                    content = "~rss add https://brettrowberry.com/?source=top_nav_blog_home"
+                    context = "#test"
+                    messageSource = MessageSource.IRC
+                    server = "irc.libera.chat"
+                }
+            )
+        // this should add an RSS feed at https://brettrowberry.com/rss.xml to the rss feeds
+        watchWithTimeout({ rssFeedRepository.findAll().isNotEmpty() })
+        println(response)
+    }
+
+    @Test
     fun `rss happy path mutate feed`() {
         val response =
             operation.handleMessage(
@@ -178,6 +210,11 @@ class RSSFeedOperationTests {
                 Arguments.of("~rss add htts://enigmastation.com/", false, null),
                 Arguments.of(
                     "~rss delete https://enigmastation.com/",
+                    true,
+                    RSSAction(RSSActionOperation.DELETE, "https://enigmastation.com/")
+                ),
+                Arguments.of(
+                    "~rss del https://enigmastation.com/",
                     true,
                     RSSAction(RSSActionOperation.DELETE, "https://enigmastation.com/")
                 ),

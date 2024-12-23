@@ -3,7 +3,6 @@ package com.enigmastation.streampack.factoid.operation
 
 import com.enigmastation.streampack.extensions.compress
 import com.enigmastation.streampack.extensions.joinToStringWithAnd
-import com.enigmastation.streampack.extensions.matchCardinality
 import com.enigmastation.streampack.extensions.pluralize
 import com.enigmastation.streampack.factoid.entity.FactoidAttribute
 import com.enigmastation.streampack.factoid.model.FactoidAttributeType
@@ -161,7 +160,7 @@ fun List<FactoidAttribute>.buildAvailableAttributeList(): String {
                     FactoidAttributeType.LANGUAGES -> it.attributeValue!!.split(",")
                     else -> listOf(it.attributeValue)
                 }
-            it.attributeType.toString().lowercase().matchCardinality(values)
+            it.attributeType.toString().lowercase().pluralize(values)
         }
         .joinToStringWithAnd()
 }

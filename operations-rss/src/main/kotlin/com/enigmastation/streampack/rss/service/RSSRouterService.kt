@@ -29,6 +29,11 @@ class RSSRouterService() : RouterService() {
         return false
     }
 
+    @Scheduled(cron = "0 */2 * * * *")
+    fun summarizeSingleEntry() {
+        feedService.summarizeSingleEntry()
+    }
+
     @Scheduled(cron = "0 0 * * * *")
     fun readFeeds() {
         val contextToEntries = mutableMapOf<UUID?, List<String>>()
@@ -46,8 +51,6 @@ class RSSRouterService() : RouterService() {
                 feed.contexts.forEach { context ->
                     contextToEntries[context.id] =
                         (contextToEntries[context.id] ?: listOf()) + entries
-
-                    val entries = feedService.findNewEntries().take(3)
                 }
             } else {
                 logger.info("Feed ${feed.url} has blank context: skipping read")

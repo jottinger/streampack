@@ -14,7 +14,7 @@
     <version>0.0.1-SNAPSHOT</version>
 
     <properties>
-        <spring-ai.version>1.0.0.M2</spring-ai.version>
+        <spring-ai.version>1.0.0-M3</spring-ai.version>
         <spring-cloud.version>2023.0.3</spring-cloud.version>
     </properties>
 
@@ -56,25 +56,11 @@
             <artifactId>lib-web</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.enigmastation.streampack</groupId>
+            <artifactId>lib-summarize</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
 
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>https://repo.spring.io/milestone</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>spring-snapshots</id>
-            <name>Spring Snapshots</name>
-            <url>https://repo.spring.io/snapshot</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
-    </repositories>
 </project>

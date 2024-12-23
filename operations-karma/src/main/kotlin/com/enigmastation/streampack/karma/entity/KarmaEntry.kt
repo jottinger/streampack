@@ -25,7 +25,8 @@ class KarmaEntry(
     @Id @GeneratedValue(strategy = GenerationType.UUID) var id: UUID? = null,
     @Column(nullable = false) var selector: String? = null,
     @Column(nullable = false) var increment: Int? = null,
-    @Column(nullable = false) var createTimestamp: OffsetDateTime? = null
+    @Column(nullable = false) var createTimestamp: OffsetDateTime? = null,
+    @Column(nullable = true, length = 512) var comment: String? = null
 ) {
     @PrePersist
     fun updateCreateTimestamp() {
@@ -34,5 +35,9 @@ class KarmaEntry(
         if (createTimestamp == null) {
             createTimestamp = OffsetDateTime.now()
         }
+    }
+
+    override fun toString(): String {
+        return "KarmaEntry[id='$id',selector='$selector',increment=$increment,createTimestamp=$createTimestamp,comment=$comment]"
     }
 }

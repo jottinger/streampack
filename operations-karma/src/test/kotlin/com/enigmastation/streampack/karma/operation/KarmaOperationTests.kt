@@ -30,7 +30,7 @@ class KarmaOperationTests {
     @BeforeTest
     fun `clear all`() {
         karmaEntryRepository.deleteAll()
-        setKarmaOperation.commentsEnabled = true
+        setKarmaOperation.karmaConfiguration.commentsEnabled = true
     }
 
     fun verify(message: RouterMessage?, substring: String) {
@@ -113,7 +113,7 @@ class KarmaOperationTests {
                 )
             )
         }
-        // 52 entries, should be 44
-        assertEquals(44, karmaEntryService.getKarma("baz"))
+        // 52 entries, should be 45
+        assertEquals(45, karmaEntryService.getKarma("baz").karma.toInt())
     }
 }

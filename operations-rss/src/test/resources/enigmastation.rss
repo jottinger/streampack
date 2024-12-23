@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	
+	xmlns:georss="http://www.georss.org/georss"
+	xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#"
+	>
+
+<channel>
+	<title>Enigmastation.com</title>
+	<atom:link href="https://enigmastation.com/feed/" rel="self" type="application/rss+xml" />
+	<link>https://enigmastation.com</link>
+	<description>Joseph Ottinger&#039;s blog</description>
+	<lastBuildDate>Tue, 03 Sep 2024 23:43:40 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.6.2</generator>
+<site xmlns="com-wordpress:feed-additions:1">12476402</site>	<item>
+		<title>New Music: Boxer</title>
+		<link>https://enigmastation.com/2024/09/03/new-music-boxer/</link>
+					<comments>https://enigmastation.com/2024/09/03/new-music-boxer/#respond</comments>
+		
+		<dc:creator><![CDATA[jottinge]]></dc:creator>
+		<pubDate>Tue, 03 Sep 2024 23:43:38 +0000</pubDate>
+				<category><![CDATA[music]]></category>
+		<category><![CDATA[boxer]]></category>
+		<guid isPermaLink="false">https://enigmastation.com/?p=1920</guid>
+
+					<description><![CDATA[Boxer is available on Bandcamp. This was originally intended as a &#8220;cleaning out&#8221; album, songs I&#8217;d had written from long, long ago &#8211; some of it nearly forty years old, stuff I wrote on my guitar, or bass, or my Casio before I had a band to work with, or decent recording equipment &#8211; even [&#8230;]]]></description>
+		
+					<wfw:commentRss>https://enigmastation.com/2024/09/03/new-music-boxer/feed/</wfw:commentRss>
+			<slash:comments>0</slash:comments>
+		
+		
+		<post-id xmlns="com-wordpress:feed-additions:1">1920</post-id>	</item>
+		<item>
+		<title>I Was Judging Rust Unfairly.</title>
+		<link>https://enigmastation.com/2024/08/21/i-was-judging-rust-unfairly/</link>
+					<comments>https://enigmastation.com/2024/08/21/i-was-judging-rust-unfairly/#respond</comments>
+		
+		<dc:creator><![CDATA[jottinge]]></dc:creator>
+		<pubDate>Wed, 21 Aug 2024 12:50:43 +0000</pubDate>
+				<category><![CDATA[programming]]></category>
+		<category><![CDATA[maven]]></category>
+		<category><![CDATA[performance]]></category>
+		<category><![CDATA[rust]]></category>
+		<category><![CDATA[sbt]]></category>
+		<guid isPermaLink="false">https://enigmastation.com/?p=1916</guid>
+
+					<description><![CDATA[Mea culpa: I was judging Rust largely based on some aspects of its tooling &#8211; one aspect in particular &#8211; and I was wrong, wrong, wrong, blaming the toolset instead of the environment, mostly because I wasn&#8217;t using enough of the environment to notice something about it. I, uh, don&#8217;t care for Scala, for a [&#8230;]]]></description>
+		
+					<wfw:commentRss>https://enigmastation.com/2024/08/21/i-was-judging-rust-unfairly/feed/</wfw:commentRss>
+			<slash:comments>0</slash:comments>
+		
+		
+		<post-id xmlns="com-wordpress:feed-additions:1">1916</post-id>	</item>
+		<item>
+		<title>Has It Really Been Almost a Year?</title>
+		<link>https://enigmastation.com/2024/08/17/has-it-really-been-almost-a-year/</link>
+					<comments>https://enigmastation.com/2024/08/17/has-it-really-been-almost-a-year/#respond</comments>
+		
+		<dc:creator><![CDATA[jottinge]]></dc:creator>
+		<pubDate>Sat, 17 Aug 2024 14:49:34 +0000</pubDate>
+				<category><![CDATA[daily]]></category>
+		<guid isPermaLink="false">https://enigmastation.com/?p=1910</guid>
+
+					<description><![CDATA[And yes, yes it has. I&#8217;m still writing, just &#8230; in different areas and in different mediums. I&#8217;m planning on writing more here soon. I&#8217;ll even say why I haven&#8217;t been writing here!]]></description>
+		
+					<wfw:commentRss>https://enigmastation.com/2024/08/17/has-it-really-been-almost-a-year/feed/</wfw:commentRss>
+			<slash:comments>0</slash:comments>
+		
+		
+		<post-id xmlns="com-wordpress:feed-additions:1">1910</post-id>	</item>
+		<item>
+		<title>Weechat on OSX</title>
+		<link>https://enigmastation.com/2023/09/06/weechat-on-osx/</link>
+					<comments>https://enigmastation.com/2023/09/06/weechat-on-osx/#respond</comments>
+		
+		<dc:creator><![CDATA[jottinge]]></dc:creator>
+		<pubDate>Wed, 06 Sep 2023 12:47:39 +0000</pubDate>
+				<category><![CDATA[daily]]></category>
+		<category><![CDATA[Lifestyle]]></category>
+		<category><![CDATA[Technology]]></category>
+		<category><![CDATA[homebrew]]></category>
+		<category><![CDATA[irc]]></category>
+		<category><![CDATA[mac]]></category>
+		<category><![CDATA[osx]]></category>
+		<category><![CDATA[weechat]]></category>
+		<guid isPermaLink="false">https://enigmastation.com/?p=1876</guid>
+
+					<description><![CDATA[This is recording how I got weechat on OSX updated to 4.0.4, and how I fixed /script to work as well, thanks to some helpful folks on IRC.]]></description>
+		
+					<wfw:commentRss>https://enigmastation.com/2023/09/06/weechat-on-osx/feed/</wfw:commentRss>
+			<slash:comments>0</slash:comments>
+		
+		
+		<post-id xmlns="com-wordpress:feed-additions:1">1876</post-id>	</item>
+		<item>
+		<title>New Album: Transience</title>
+		<link>https://enigmastation.com/2023/06/01/new-album-transience/</link>
+					<comments>https://enigmastation.com/2023/06/01/new-album-transience/#respond</comments>
+		
+		<dc:creator><![CDATA[jottinge]]></dc:creator>
+		<pubDate>Thu, 01 Jun 2023 12:19:25 +0000</pubDate>
+				<category><![CDATA[music]]></category>
+		<category><![CDATA[led zeppelin]]></category>
+		<category><![CDATA[recording]]></category>
+		<category><![CDATA[release]]></category>
+		<category><![CDATA[rush]]></category>
+		<category><![CDATA[transience]]></category>
+		<guid isPermaLink="false">https://enigmastation.com/?p=1868</guid>
+
+					<description><![CDATA[These are release notes, sort of, for my third album, Transience, which I put up on Bandcamp on May 31, 2023.]]></description>
+		
+					<wfw:commentRss>https://enigmastation.com/2023/06/01/new-album-transience/feed/</wfw:commentRss>
+			<slash:comments>0</slash:comments>
+		
+		
+		<post-id xmlns="com-wordpress:feed-additions:1">1868</post-id>	</item>
+		<item>
+		<title>I started a substack&#8230; and deleted it minutes later.</title>
+		<link>https://enigmastation.com/2023/05/23/i-started-a-substack-and-deleted-it-minutes-later/</link>
+					<comments>https://enigmastation.com/2023/05/23/i-started-a-substack-and-deleted-it-minutes-later/#respond</comments>
+		
+		<dc:creator><![CDATA[jottinge]]></dc:creator>
+		<pubDate>Tue, 23 May 2023 14:48:14 +0000</pubDate>
+				<category><![CDATA[daily]]></category>
+		<category><![CDATA[writing]]></category>
+		<category><![CDATA[substack]]></category>
+		<guid isPermaLink="false">https://enigmastation.com/?p=1863</guid>
+
+					<description><![CDATA[I deleted it because the main value in starting another site was that it could be faintly anonymous; I&#8217;m not worried about hiding as much as I don&#8217;t like putting my name near the front of anything I write. I dislike cults of personality, and I recoil at the idea that I could be leveraging [&#8230;]]]></description>
+		
+					<wfw:commentRss>https://enigmastation.com/2023/05/23/i-started-a-substack-and-deleted-it-minutes-later/feed/</wfw:commentRss>
+			<slash:comments>0</slash:comments>
+		
+		
+		<post-id xmlns="com-wordpress:feed-additions:1">1863</post-id>	</item>
+		<item>
+		<title>RC Flying, 2023 Apr 21: Night Flying?</title>
+		<link>https://enigmastation.com/2023/04/22/rc-flying-2023-apr-21-night-flying/</link>
+					<comments>https://enigmastation.com/2023/04/22/rc-flying-2023-apr-21-night-flying/#respond</comments>
+		
+		<dc:creator><![CDATA[jottinge]]></dc:creator>
+		<pubDate>Sat, 22 Apr 2023 12:16:38 +0000</pubDate>
+				<category><![CDATA[Radio Control Flying]]></category>
+		<category><![CDATA[rc planes]]></category>
+		<category><![CDATA[flying]]></category>
+		<category><![CDATA[rc]]></category>
+		<guid isPermaLink="false">https://enigmastation.com/?p=1860</guid>
+
+					<description><![CDATA[Fun night of night flying with the RC club, but I had a slight encounter with a tree. All is well, or will be. I continue to learn, and that's the goal.]]></description>
+		
+					<wfw:commentRss>https://enigmastation.com/2023/04/22/rc-flying-2023-apr-21-night-flying/feed/</wfw:commentRss>
+			<slash:comments>0</slash:comments>
+		
+		
+		<post-id xmlns="com-wordpress:feed-additions:1">1860</post-id>	</item>
+		<item>
+		<title>Put On Blast</title>
+		<link>https://enigmastation.com/2023/04/20/put-on-blast/</link>
+					<comments>https://enigmastation.com/2023/04/20/put-on-blast/#respond</comments>
+		
+		<dc:creator><![CDATA[jottinge]]></dc:creator>
+		<pubDate>Thu, 20 Apr 2023 14:21:11 +0000</pubDate>
+				<category><![CDATA[humor]]></category>
+		<category><![CDATA[politics]]></category>
+		<category><![CDATA[psychology]]></category>
+		<category><![CDATA[rhetoric]]></category>
+		<guid isPermaLink="false">https://enigmastation.com/?p=1856</guid>
+
+					<description><![CDATA[I groused on a social media site about how I thought both major political parties in the US were venal and stupid, and someone unleashed an absolute masterwork of rhetoric on me in DM. It was unconvincing, because they apparently knew me about 1% as well as they thought they did, but still... mastery was in motion.]]></description>
+		
+					<wfw:commentRss>https://enigmastation.com/2023/04/20/put-on-blast/feed/</wfw:commentRss>
+			<slash:comments>0</slash:comments>
+		
+		
+		<post-id xmlns="com-wordpress:feed-additions:1">1856</post-id>	</item>
+		<item>
+		<title>RC Flying, 2023 Apr 2</title>
+		<link>https://enigmastation.com/2023/04/03/rc-flying-2023-apr-2/</link>
+					<comments>https://enigmastation.com/2023/04/03/rc-flying-2023-apr-2/#respond</comments>
+		
+		<dc:creator><![CDATA[jottinge]]></dc:creator>
+		<pubDate>Mon, 03 Apr 2023 12:48:53 +0000</pubDate>
+				<category><![CDATA[Radio Control Flying]]></category>
+		<category><![CDATA[rc planes]]></category>
+		<category><![CDATA[aeroscout]]></category>
+		<category><![CDATA[apprentice]]></category>
+		<category><![CDATA[flying]]></category>
+		<category><![CDATA[rc]]></category>
+		<guid isPermaLink="false">https://enigmastation.com/?p=1849</guid>
+
+					<description><![CDATA[Sunday was mostly an administrative/setup day; not a lot of flying, but what flying I did went all right. ]]></description>
+		
+					<wfw:commentRss>https://enigmastation.com/2023/04/03/rc-flying-2023-apr-2/feed/</wfw:commentRss>
+			<slash:comments>0</slash:comments>
+		
+		
+		<post-id xmlns="com-wordpress:feed-additions:1">1849</post-id>	</item>
+		<item>
+		<title>Flight Report, 2023/Mar/26</title>
+		<link>https://enigmastation.com/2023/03/26/flight-report-2023-mar-26/</link>
+					<comments>https://enigmastation.com/2023/03/26/flight-report-2023-mar-26/#respond</comments>
+		
+		<dc:creator><![CDATA[jottinge]]></dc:creator>
+		<pubDate>Mon, 27 Mar 2023 01:45:01 +0000</pubDate>
+				<category><![CDATA[Radio Control Flying]]></category>
+		<category><![CDATA[rc planes]]></category>
+		<category><![CDATA[apprentice]]></category>
+		<category><![CDATA[flying]]></category>
+		<category><![CDATA[radio control]]></category>
+		<category><![CDATA[rc]]></category>
+		<category><![CDATA[spektrum]]></category>
+		<guid isPermaLink="false">https://enigmastation.com/?p=1846</guid>
+
+					<description><![CDATA[Today was a good day, after all was said and done - started off rainy and miserable and an unlikely day to get into the air, but it all worked out and turned out well.
+
+Just a smooth, simple day of flying, with no drama - which was pretty much exactly what I needed.]]></description>
+		
+					<wfw:commentRss>https://enigmastation.com/2023/03/26/flight-report-2023-mar-26/feed/</wfw:commentRss>
+			<slash:comments>0</slash:comments>
+		
+		
+		<post-id xmlns="com-wordpress:feed-additions:1">1846</post-id>	</item>
+	</channel>
+</rss>
