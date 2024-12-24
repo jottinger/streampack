@@ -1,7 +1,7 @@
 /* Joseph B. Ottinger (C)2024 */
 package com.enigmastation.streampack.rss.handler
 
-import com.enigmastation.streampack.rss.entity.RSSEntry
+import com.enigmastation.streampack.rss.dto.RSSEntryOut
 import com.enigmastation.streampack.rss.entity.RSSFeed
 import com.enigmastation.streampack.rss.repository.RSSEntryRepository
 import com.enigmastation.streampack.rss.service.RSSFeedService
@@ -63,14 +63,14 @@ class RSSHandler(val rssFeedService: RSSFeedService, val rssEntryRepository: RSS
         @PathVariable("id") id: String,
         @RequestParam("page") page: Int = 0,
         @RequestParam("pageSize") pageSize: Int = 20
-    ): ResponseEntity<Page<RSSEntry>> {
+    ): ResponseEntity<Page<RSSEntryOut>> {
         val feed = rssFeedService.findByKey(id)
         return feed
             .map {
                 val pageRequest = PageRequest.of(page, pageSize)
                 val entries = rssEntryRepository.findByFeedOrderByPublishedDesc(it, pageRequest)
 
-                ResponseEntity.ok(entries)
+                ResponseEntity.ok(entries.map { rssEntry -> rssEntry.toDTO() })
             }
             .orElse(ResponseEntity.notFound().build())
     }

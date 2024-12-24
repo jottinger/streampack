@@ -1,19 +1,12 @@
 /* Joseph B. Ottinger (C)2024 */
 package com.enigmastation.streampack.rss.entity
 
-import jakarta.persistence.Column
-import jakarta.persistence.ElementCollection
-import jakarta.persistence.Entity
-import jakarta.persistence.FetchType
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.ManyToOne
-import jakarta.persistence.PrePersist
-import jakarta.persistence.PreUpdate
+import com.enigmastation.streampack.rss.dto.RSSEntryDTO
+import com.enigmastation.streampack.rss.dto.RSSEntryOut
+import jakarta.persistence.*
 import java.net.URL
 import java.time.OffsetDateTime
-import java.util.UUID
+import java.util.*
 
 @Entity
 class RSSEntry(
@@ -41,5 +34,19 @@ class RSSEntry(
             summarized = false
         }
         updateDate = OffsetDateTime.now()
+    }
+
+    fun toDTO(): RSSEntryOut {
+        return RSSEntryDTO(
+            id,
+            title,
+            url,
+            summary,
+            llmSummary,
+            categories,
+            published,
+            createDate,
+            updateDate
+        )
     }
 }
