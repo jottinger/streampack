@@ -8,8 +8,9 @@ import org.springframework.stereotype.Component
 class SlackServiceConfiguration {
     var botToken: String = ""
     var signingSecret: String = ""
+    var appToken:String=""
 
     override fun toString(): String {
-        return "SlackServiceConfiguration[botToken='$botToken', signingSecret='$signingSecret']"
+        return "SlackServiceConfiguration[appToken='$appToken',botToken='$botToken', signingSecret='$signingSecret']"
     }
 }
