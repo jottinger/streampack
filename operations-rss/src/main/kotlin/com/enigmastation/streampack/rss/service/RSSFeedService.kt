@@ -69,6 +69,10 @@ class RSSFeedService(
 
     val logger = LoggerFactory.getLogger(this::class.java)
 
+    fun findByKey(key: String): Optional<RSSFeed> {
+        return rssFeedRepository.findByKey(key)
+    }
+
     @Transactional
     fun allFeeds(): List<RSSFeed> {
         val all = rssFeedRepository.findAll()
