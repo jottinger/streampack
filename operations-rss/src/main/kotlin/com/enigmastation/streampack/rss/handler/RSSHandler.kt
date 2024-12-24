@@ -18,7 +18,21 @@ import org.springframework.web.bind.annotation.RestController
 class RSSHandler(val rssFeedService: RSSFeedService, val rssEntryRepository: RSSEntryRepository) {
     @GetMapping("/feeds", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getFeeds(): ResponseEntity<List<RSSFeed>> {
-        return ResponseEntity.ok(rssFeedService.allFeeds())
+        return ResponseEntity.ok(
+            rssFeedService.allFeeds().map {
+                with(it) {
+                    RSSFeed(
+                        it.id,
+                        it.title,
+                        it.url,
+                        it.feedUrl,
+                        setOf(),
+                        it.createDate,
+                        it.updateDate
+                    )
+                }
+            }
+        )
     }
 
     /** This returns the feed, except without the attached contexts. We don't betray contexts. */
