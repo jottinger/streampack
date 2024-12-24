@@ -1,3 +1,4 @@
+/* Joseph B. Ottinger (C)2024 */
 package com.enigmastation.streampack.rss.handler
 
 import com.enigmastation.streampack.rss.entity.RSSEntry
@@ -14,33 +15,29 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class RSSHandler(
-    val rssFeedService: RSSFeedService,
-    val rssEntryRepository: RSSEntryRepository
-) {
+class RSSHandler(val rssFeedService: RSSFeedService, val rssEntryRepository: RSSEntryRepository) {
     @GetMapping("/feeds", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getFeeds(): ResponseEntity<List<RSSFeed>> {
         return ResponseEntity.ok(rssFeedService.allFeeds())
     }
 
-    /**
-     * This returns the feed, except without the attached contexts. We don't betray contexts.
-     */
+    /** This returns the feed, except without the attached contexts. We don't betray contexts. */
     @GetMapping("/feeds/{id}", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getFeedById(@PathVariable("id") id: String): ResponseEntity<RSSFeed> {
         val feed = rssFeedService.findByKey(id)
         return feed
             .map {
                 with(it) {
-                    val feedCopy = RSSFeed(
-                        it.id,
-                        it.title,
-                        it.url,
-                        it.feedUrl,
-                        setOf(),
-                        it.createDate,
-                        it.updateDate
-                    )
+                    val feedCopy =
+                        RSSFeed(
+                            it.id,
+                            it.title,
+                            it.url,
+                            it.feedUrl,
+                            setOf(),
+                            it.createDate,
+                            it.updateDate
+                        )
                     ResponseEntity.ok(feedCopy)
                 }
             }
@@ -56,12 +53,11 @@ class RSSHandler(
         val feed = rssFeedService.findByKey(id)
         return feed
             .map {
-                val pageRequest = PageRequest.of(page, pageSize);
+                val pageRequest = PageRequest.of(page, pageSize)
                 val entries = rssEntryRepository.findByFeedOrderByPublishedDesc(it, pageRequest)
 
                 ResponseEntity.ok(entries)
             }
             .orElse(ResponseEntity.notFound().build())
     }
-
 }

@@ -13,13 +13,16 @@ import org.springframework.stereotype.Repository
 interface RSSFeedRepository : JpaRepository<RSSFeed, UUID> {
     // this method should be abstracted by the RSSFeedService.
     fun findByFeedUrlOrUrl(url: URL, otherUrl: URL): Optional<RSSFeed>
-    @Query("""
+
+    @Query(
+        """
         select f 
             from RSSFeed f 
             where 
                 lower(f.feedUrl)=lower(:key) or 
                 lower(f.url)=lower(:key) or
                 lower(cast(f.id as string))=lower(:key)
-            """)
+            """
+    )
     fun findByKey(key: String): Optional<RSSFeed>
 }
