@@ -2,7 +2,8 @@
 package com.enigmastation.streampack.rss.handler
 
 import com.enigmastation.streampack.rss.dto.RSSEntryOut
-import com.enigmastation.streampack.rss.entity.RSSFeed
+import com.enigmastation.streampack.rss.dto.RSSFeedDTO
+import com.enigmastation.streampack.rss.dto.RSSFeedOut
 import com.enigmastation.streampack.rss.repository.RSSEntryRepository
 import com.enigmastation.streampack.rss.service.RSSFeedService
 import org.springframework.data.domain.Page
@@ -17,45 +18,19 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class RSSHandler(val rssFeedService: RSSFeedService, val rssEntryRepository: RSSEntryRepository) {
     @GetMapping("/feeds", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getFeeds(): ResponseEntity<List<RSSFeed>> {
-        return ResponseEntity.ok(
-            rssFeedService.allFeeds().map {
-                with(it) {
-                    RSSFeed(
-                        it.id,
-                        it.title,
-                        it.url,
-                        it.feedUrl,
-                        setOf(),
-                        it.createDate,
-                        it.updateDate
-                    )
-                }
-            }
-        )
+    fun getFeeds(
+        @RequestParam("page") page: Int = 0,
+        @RequestParam("pageSize") pageSize: Int = 20
+    ): ResponseEntity<Page<RSSFeedOut>> {
+        val pageRequest = PageRequest.of(page, pageSize)
+        return ResponseEntity.ok(rssFeedService.allFeeds(pageRequest).map { it.toDTO() })
     }
 
     /** This returns the feed, except without the attached contexts. We don't betray contexts. */
     @GetMapping("/feeds/{id}", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getFeedById(@PathVariable("id") id: String): ResponseEntity<RSSFeed> {
+    fun getFeedById(@PathVariable("id") id: String): ResponseEntity<RSSFeedDTO> {
         val feed = rssFeedService.findByKey(id)
-        return feed
-            .map {
-                with(it) {
-                    val feedCopy =
-                        RSSFeed(
-                            it.id,
-                            it.title,
-                            it.url,
-                            it.feedUrl,
-                            setOf(),
-                            it.createDate,
-                            it.updateDate
-                        )
-                    ResponseEntity.ok(feedCopy)
-                }
-            }
-            .orElse(ResponseEntity.notFound().build())
+        return feed.map { ResponseEntity.ok(it.toDTO()) }.orElse(ResponseEntity.notFound().build())
     }
 
     @GetMapping("/feeds/{id}/entries", produces = [MediaType.APPLICATION_JSON_VALUE])

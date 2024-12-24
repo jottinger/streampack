@@ -2,16 +2,11 @@
 package com.enigmastation.streampack.rss.entity
 
 import com.enigmastation.streampack.irclog.model.Channel
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.ManyToMany
-import jakarta.persistence.PrePersist
-import jakarta.persistence.PreUpdate
+import com.enigmastation.streampack.rss.dto.RSSFeedDTO
+import jakarta.persistence.*
 import java.net.URL
 import java.time.OffsetDateTime
-import java.util.UUID
+import java.util.*
 
 @Entity
 class RSSFeed(
@@ -32,5 +27,9 @@ class RSSFeed(
     @PreUpdate
     fun updateEntity() {
         updateDate = OffsetDateTime.now()
+    }
+
+    fun toDTO(): RSSFeedDTO {
+        return RSSFeedDTO(id, title, url, feedUrl, createDate, updateDate)
     }
 }

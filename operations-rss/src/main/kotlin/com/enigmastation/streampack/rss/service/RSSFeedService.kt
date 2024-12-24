@@ -23,9 +23,11 @@ import java.net.URI
 import java.net.URL
 import java.time.OffsetDateTime
 import java.time.ZoneId
-import java.util.Optional
+import java.util.*
 import org.hibernate.Hibernate
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 
 @Service
@@ -78,6 +80,15 @@ class RSSFeedService(
         val all = rssFeedRepository.findAll()
         all.forEach { Hibernate.initialize(it.contexts) }
         return all
+    }
+
+    @Transactional
+    fun allFeeds(page: Pageable): Page<RSSFeed> {
+        val all = rssFeedRepository.findAll(page)
+        return all.map {
+            Hibernate.initialize(it.contexts)
+            it
+        }
     }
 
     fun findFeedFromSite(url: String): String {
