@@ -9,6 +9,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.context.support.ApplicationObjectSupport
+import org.springframework.data.web.config.EnableSpringDataWebSupport
+import org.springframework.data.web.config.EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO
 import org.springframework.http.client.ClientHttpRequestFactory
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.scheduling.annotation.EnableScheduling
@@ -21,6 +23,7 @@ import org.springframework.web.client.RestTemplate
 @SpringBootApplication
 @EnableScheduling
 @EnableWebSecurity
+@EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO)
 class LLMBot : CommandLineRunner, ApplicationObjectSupport() {
     @Bean fun restTemplate(): RestTemplate = RestTemplate()
 
