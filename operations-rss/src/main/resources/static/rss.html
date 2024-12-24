@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RSS Feeds</title>
+    <script>
+        async function loadFeeds() {
+            const response = await fetch('/feeds?page=0&pageSize=20');
+            const feeds = await response.json();
+            const feedList = document.getElementById('feed-list');
+            feedList.innerHTML = '';
+            feeds.content.forEach(feed => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = '#';
+                a.innerText = feed.title;
+                a.onclick = () => loadEntries(feed.id);
+                li.appendChild(a);
+                feedList.appendChild(li);
+            });
+        }
+
+        async function loadEntries(feedId) {
+            const response = await fetch(`/feeds/${feedId}/entries?page=0&pageSize=20`);
+            const entries = await response.json();
+            const entryList = document.getElementById('entry-list');
+            entryList.innerHTML = '';
+            entries.content.forEach(entry => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = entry.url;
+                a.innerText = entry.title;
+                li.appendChild(a);
+                entryList.appendChild(li);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', loadFeeds);
+    </script>
+</head>
+<body>
+    <h1>RSS Feeds</h1>
+    <ul id="feed-list"></ul>
+    <h2>Entries</h2>
+    <ul id="entry-list"></ul>
+</body>
+</html>
