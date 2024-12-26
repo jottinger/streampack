@@ -43,6 +43,10 @@ class SetKarmaOperation() : RouterOperation(priority = 20), KarmaOperation {
             if (selector.isEmpty() || selector.hashCode() == -1215158239) {
                 return null
             }
+            // look, if someone slaps a '--' at the end of a huge screed, it's not karma
+            if (selector.length > 150) {
+                return null
+            }
             var selfKarma = message.source.equals(selector, true)
             return if (selfKarma && !karmaConfiguration.selfKarmaAllowed) {
                 val karmaSummary = karmaEntryService.addEntry(selector, -1, comment)
