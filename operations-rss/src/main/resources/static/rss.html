@@ -1,46 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RSS Feeds</title>
-    <script>
-        async function loadFeeds() {
-            const response = await fetch('/feeds?page=0&pageSize=20');
-            const feeds = await response.json();
-            const feedList = document.getElementById('feed-list');
-            feedList.innerHTML = '';
-            feeds.content.forEach(feed => {
-                const li = document.createElement('li');
-                const a = document.createElement('a');
-                a.href = '#';
-                a.innerText = feed.title;
-                a.onclick = () => loadEntries(feed.id);
-                li.appendChild(a);
-                feedList.appendChild(li);
-            });
-        }
-
-        async function loadEntries(feedId) {
-            const response = await fetch(`/feeds/${feedId}/entries?page=0&pageSize=20`);
-            const entries = await response.json();
-            const entryList = document.getElementById('entry-list');
-            entryList.innerHTML = '';
-            entries.content.forEach(entry => {
-                const li = document.createElement('li');
-                const a = document.createElement('a');
-                a.href = entry.url;
-                a.innerText = entry.title;
-                li.appendChild(a);
-                entryList.appendChild(li);
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', loadFeeds);
-    </script>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="app.js"></script>
 </head>
 <body>
-    <h1>RSS Feeds</h1>
-    <ul id="feed-list"></ul>
-    <h2>Entries</h2>
-    <ul id="entry-list"></ul>
+    <div class="container">
+        <aside class="left-pane">
+            <h2>Feeds</h2>
+            <ul id="feed-list">
+                <!-- Feeds will be dynamically populated here -->
+            </ul>
+        </aside>
+        <main class="right-pane">
+            <section id="feed-info">
+                <!-- Feed details will appear here -->
+            </section>
+            <section id="entries">
+                <h3>Entries</h3>
+                <table id="entry-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Summary</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Entries will be dynamically populated here -->
+                    </tbody>
+                </table>
+                <div id="pagination">
+                    <button id="prev-page" onclick="changePage(-1)" disabled>Previous</button>
+                    <span id="page-info">Page 1</span>
+                    <button id="next-page" onclick="changePage(1)" disabled>Next</button>
+                </div>
+            </section>
+        </main>
+    </div>
 </body>
 </html>
