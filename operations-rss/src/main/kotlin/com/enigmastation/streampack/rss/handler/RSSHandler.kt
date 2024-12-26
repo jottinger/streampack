@@ -8,6 +8,7 @@ import com.enigmastation.streampack.rss.repository.RSSEntryRepository
 import com.enigmastation.streampack.rss.service.RSSFeedService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -48,5 +49,14 @@ class RSSHandler(val rssFeedService: RSSFeedService, val rssEntryRepository: RSS
                 ResponseEntity.ok(entries.map { rssEntry -> rssEntry.toDTO() })
             }
             .orElse(ResponseEntity.notFound().build())
+    }
+
+    @GetMapping("/feeds/entries", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getFeedEntries(
+        @RequestParam("page") page: Int = 0,
+        @RequestParam("pageSize") pageSize: Int = 20
+    ): ResponseEntity<Page<RSSEntryOut>> {
+        val pageRequest = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "published"))
+        return ResponseEntity.ok(rssFeedService.allEntries(pageRequest).map { it.toDTO() })
     }
 }

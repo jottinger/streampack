@@ -83,6 +83,12 @@ class RSSFeedService(
     }
 
     @Transactional
+    fun allEntries(page: Pageable): Page<RSSEntry> {
+        val all = rssEntryRepository.findAll(page)
+        return all
+    }
+
+    @Transactional
     fun allFeeds(page: Pageable): Page<RSSFeed> {
         val all = rssFeedRepository.findAll(page)
         return all.map {
