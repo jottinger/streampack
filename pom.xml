@@ -67,7 +67,7 @@
         <springdoc.version>2.6.0</springdoc.version>
         <rome.version>2.1.0</rome.version>
         <jsoup.version>1.18.1</jsoup.version>
-        <commons-text.version>1.12.0</commons-text.version>
+        <commons-text.version>1.13.0</commons-text.version>
         <kitteh.version>9.0.0</kitteh.version>
         <jda.version>5.2.1</jda.version>
         <parser-ng.version>0.1.9-release</parser-ng.version>
