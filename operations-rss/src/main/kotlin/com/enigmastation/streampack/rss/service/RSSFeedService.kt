@@ -17,6 +17,11 @@ import com.rometools.rome.io.FeedException
 import com.rometools.rome.io.SyndFeedInput
 import com.rometools.rome.io.XmlReader
 import jakarta.transaction.Transactional
+import org.hibernate.Hibernate
+import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.stereotype.Service
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.net.URI
@@ -24,11 +29,6 @@ import java.net.URL
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.util.*
-import org.hibernate.Hibernate
-import org.slf4j.LoggerFactory
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
-import org.springframework.stereotype.Service
 
 @Service
 class RSSFeedService(
@@ -123,16 +123,14 @@ class RSSFeedService(
                             true -> combinePaths(url, value)
                             else -> value
                         }
-                    }
-                    .mapNotNull {
+                    }.firstNotNullOfOrNull {
                         try {
                             it.toURL()
                             it
                         } catch (_: Throwable) {
                             null
                         }
-                    }
-                    .firstOrNull() ?: throw IOException("Feed url not found for $url")
+                    } ?: throw IOException("Feed url not found for $url")
             } else {
                 throw IOException("Feed url not found for $url")
             }
@@ -255,7 +253,8 @@ class RSSFeedService(
             // first place!
             try {
                 rssFeed.url = ((feed.link?.toURL() ?: feed.uri?.toURL())) ?: rssFeed.feedUrl
-            } catch (_: Throwable) {}
+            } catch (_: Throwable) {
+            }
             // reset the time!
             rssFeed.updateEntity()
 
@@ -323,9 +322,10 @@ class RSSFeedService(
 
     fun readFeed(url: String): SyndFeed? {
         // logger.info("in getFeed({})", url)
-        val feed = okHttpService.getUrl(url)
-        val input = SyndFeedInput()
         return try {
+            val feed = okHttpService.getUrl(url)
+            val input = SyndFeedInput()
+
             input.build(XmlReader(ByteArrayInputStream(feed.toByteArray(Charsets.UTF_8))))
         } catch (e: FeedException) {
             // println(feed)
